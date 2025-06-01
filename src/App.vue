@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { commands } from './bindings.ts'
+import { useI18n } from './utils.ts'
 
 const greetMsg = ref('')
 const name = ref('')
+const { t } = useI18n()
 
 async function greet() {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -11,7 +13,7 @@ async function greet() {
 }
 
 function test() {
-  console.log('test')
+  console.log(t('greet', { name: name.value }))
 }
 </script>
 
@@ -37,7 +39,7 @@ function test() {
       <button type="submit">Greet</button>
     </form>
     <p class="text-red">{{ greetMsg }}</p>
-    <n-button @click="test">测试</n-button>
+    <n-button @click="test">{{ t('test') }}</n-button>
   </main>
 </template>
 
