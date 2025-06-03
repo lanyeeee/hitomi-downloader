@@ -12,8 +12,9 @@ async function greet() {
   greetMsg.value = await commands.greet(name.value)
 }
 
-function test() {
-  console.log(t('greet', { name: name.value }))
+async function test() {
+  const result = await commands.getConfig()
+  console.log(result)
 }
 </script>
 
