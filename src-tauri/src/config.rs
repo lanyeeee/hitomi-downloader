@@ -8,6 +8,7 @@ use tauri::{AppHandle, Manager};
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     pub download_dir: PathBuf,
+    pub enable_file_logger: bool,
 }
 
 impl Config {
@@ -65,7 +66,7 @@ impl Config {
     fn default(app_data_dir: &Path) -> Config {
         Config {
             download_dir: app_data_dir.join("download"),
+            enable_file_logger: true,
         }
     }
 }
-
