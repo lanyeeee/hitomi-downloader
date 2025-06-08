@@ -3,12 +3,16 @@ mod config;
 mod errors;
 mod events;
 mod extensions;
+mod hitomi;
+mod hitomi_client;
 mod logger;
 mod types;
+mod utils;
 
 use anyhow::Context;
 use config::Config;
 use events::LogEvent;
+use hitomi_client::HitomiClient;
 use parking_lot::RwLock;
 use tauri::{Manager, Wry};
 
@@ -25,6 +29,7 @@ pub fn run() {
             greet,
             get_config,
             save_config,
+            search,
         ])
         .events(tauri_specta::collect_events![LogEvent]);
 
@@ -43,6 +48,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
+            utils::APP_HANDLE.get_or_init(|| app.handle().clone());
+
             builder.mount_events(app);
 
             let app_data_dir = app
@@ -57,6 +64,9 @@ pub fn run() {
 
             let config = RwLock::new(Config::new(app.handle())?);
             app.manage(config);
+
+            let hitomi_client = HitomiClient::new(app.handle().clone());
+            app.manage(hitomi_client);
 
             logger::init(app.handle())?;
 

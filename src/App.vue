@@ -13,7 +13,7 @@ async function greet() {
 }
 
 async function test() {
-  const result = await commands.getConfig()
+  const result = await commands.search('herio -c97', 1, false)
   console.log(result)
 }
 </script>

@@ -18,6 +18,14 @@ async saveConfig(config: Config) : Promise<Result<null, CommandError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async search(query: string, pageNum: number, sortByPopularity: boolean) : Promise<Result<SearchResult, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search", { query, pageNum, sortByPopularity }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -36,11 +44,16 @@ logEvent: "log-event"
 
 /** user-defined types **/
 
+export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; dirName: string }
 export type CommandError = { err_title: string; err_message: string }
 export type Config = { downloadDir: string; enableFileLogger: boolean }
+export type GalleryFiles = { width: number; hash: string; haswebp?: number; hasavif?: number; hasjxl?: number; name: string; height: number }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
+export type Language = { galleryid: number; language_localname: string; name: string }
 export type LogEvent = { timestamp: string; level: LogLevel; fields: { [key in string]: JsonValue }; target: string; filename: string; line_number: number }
 export type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR"
+export type SearchResult = { comics: Comic[]; currentPage: number; totalPage: number; ids: number[] }
+export type Tag = { tag: string; female: number; male: number }
 
 /** tauri-specta globals **/
 

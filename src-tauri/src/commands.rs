@@ -4,7 +4,9 @@ use tauri::{AppHandle, State};
 use crate::{
     config::Config,
     errors::{CommandError, CommandResult},
+    hitomi_client::HitomiClient,
     logger,
+    types::SearchResult,
 };
 
 #[tauri::command]
@@ -16,7 +18,7 @@ pub fn greet(name: &str) -> String {
 #[tauri::command(async)]
 #[specta::specta]
 #[allow(clippy::needless_pass_by_value)]
-pub fn get_config(config: tauri::State<RwLock<Config>>) -> Config {
+pub fn get_config(config: State<RwLock<Config>>) -> Config {
     let config = config.read().clone();
     tracing::debug!("get config success");
     config
@@ -57,4 +59,20 @@ pub fn save_config(
     }
 
     Ok(())
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn search(
+    hitomi_client: State<'_, HitomiClient>,
+    query: &str,
+    page_num: usize,
+    sort_by_popularity: bool,
+) -> CommandResult<SearchResult> {
+    let search_result = hitomi_client
+        .search(query, page_num, sort_by_popularity)
+        .await
+        .map_err(|err| CommandError::from("search failed", err))?;
+    tracing::debug!("search success");
+    Ok(search_result)
 }
