@@ -76,3 +76,18 @@ pub async fn search(
     tracing::debug!("search success");
     Ok(search_result)
 }
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn get_page(
+    hitomi_client: State<'_, HitomiClient>,
+    ids: Vec<i32>,
+    page_num: usize,
+) -> CommandResult<SearchResult> {
+    let search_result = hitomi_client
+        .get_page(ids, page_num)
+        .await
+        .map_err(|err| CommandError::from("get page failed", err))?;
+    tracing::debug!("get page success");
+    Ok(search_result)
+}

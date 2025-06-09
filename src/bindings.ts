@@ -26,6 +26,14 @@ async search(query: string, pageNum: number, sortByPopularity: boolean) : Promis
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async getPage(ids: number[], pageNum: number) : Promise<Result<SearchResult, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_page", { ids, pageNum }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

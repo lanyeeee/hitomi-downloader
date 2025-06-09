@@ -30,6 +30,7 @@ pub fn run() {
             get_config,
             save_config,
             search,
+            get_page,
         ])
         .events(tauri_specta::collect_events![LogEvent]);
 
