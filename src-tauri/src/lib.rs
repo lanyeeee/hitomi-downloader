@@ -31,6 +31,7 @@ pub fn run() {
             save_config,
             search,
             get_page,
+            get_comic,
         ])
         .events(tauri_specta::collect_events![LogEvent]);
 

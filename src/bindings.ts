@@ -34,6 +34,14 @@ async getPage(ids: number[], pageNum: number) : Promise<Result<SearchResult, Com
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async getComic(id: number) : Promise<Result<Comic, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_comic", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

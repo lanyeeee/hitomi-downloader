@@ -13,7 +13,7 @@ async function greet() {
 }
 
 async function test() {
-  const result = await commands.search('herio -c97', 1, false)
+  const result = await commands.getComic(2829145)
   console.log(result)
 }
 </script>

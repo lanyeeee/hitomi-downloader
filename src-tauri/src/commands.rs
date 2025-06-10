@@ -6,7 +6,7 @@ use crate::{
     errors::{CommandError, CommandResult},
     hitomi_client::HitomiClient,
     logger,
-    types::SearchResult,
+    types::{Comic, SearchResult},
 };
 
 #[tauri::command]
@@ -90,4 +90,15 @@ pub async fn get_page(
         .map_err(|err| CommandError::from("get page failed", err))?;
     tracing::debug!("get page success");
     Ok(search_result)
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn get_comic(hitomi_client: State<'_, HitomiClient>, id: i32) -> CommandResult<Comic> {
+    let comic = hitomi_client
+        .get_comic(id)
+        .await
+        .map_err(|err| CommandError::from("get comic failed", err))?;
+    tracing::debug!("get comic success");
+    Ok(comic)
 }

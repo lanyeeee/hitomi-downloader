@@ -10,7 +10,7 @@ use tauri::{AppHandle, Manager};
 
 use crate::{
     hitomi::{self},
-    types::SearchResult,
+    types::{Comic, SearchResult},
     utils::get_app_handle,
 };
 
@@ -75,6 +75,15 @@ impl HitomiClient {
                 .await?;
 
         Ok(search_result)
+    }
+
+    pub async fn get_comic(&self, id: i32) -> anyhow::Result<Comic> {
+        let gallery = hitomi::get_gallery_info(id)
+            .await
+            .context(format!("Failed to get gallery info for `{id}`"))?;
+
+        let comic = Comic::from_gallery_info(&self.app, gallery).await?;
+        Ok(comic)
     }
 }
 
