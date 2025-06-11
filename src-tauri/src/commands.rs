@@ -3,6 +3,7 @@ use tauri::{AppHandle, State};
 
 use crate::{
     config::Config,
+    download_manager::DownloadManager,
     errors::{CommandError, CommandResult},
     hitomi_client::HitomiClient,
     logger,
@@ -101,4 +102,64 @@ pub async fn get_comic(hitomi_client: State<'_, HitomiClient>, id: i32) -> Comma
         .map_err(|err| CommandError::from("get comic failed", err))?;
     tracing::debug!("get comic success");
     Ok(comic)
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn create_download_task(
+    download_manager: State<DownloadManager>,
+    comic: Comic,
+) -> CommandResult<()> {
+    let id = comic.id;
+    download_manager
+        .create_download_task(comic)
+        .map_err(|err| {
+            let err_msg = format!("Failed to create download task with ID `{id}`");
+            CommandError::from(&err_msg, err)
+        })?;
+    tracing::debug!("Created download task with ID `{id}` successfully");
+    Ok(())
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn pause_download_task(download_manager: State<DownloadManager>, id: i32) -> CommandResult<()> {
+    download_manager.pause_download_task(id).map_err(|err| {
+        let err_msg = format!("Failed to pause download task with ID `{id}`");
+        CommandError::from(&err_msg, err)
+    })?;
+    tracing::debug!("Paused download task with ID `{id}` successfully");
+    Ok(())
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn resume_download_task(
+    download_manager: State<DownloadManager>,
+    id: i32,
+) -> CommandResult<()> {
+    download_manager.resume_download_task(id).map_err(|err| {
+        let err_msg = format!("Failed to resume download task with ID `{id}`");
+        CommandError::from(&err_msg, err)
+    })?;
+    tracing::debug!("Resumed download task with ID `{id}` successfully");
+    Ok(())
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn cancel_download_task(
+    download_manager: State<DownloadManager>,
+    id: i32,
+) -> CommandResult<()> {
+    download_manager.cancel_download_task(id).map_err(|err| {
+        let err_msg = format!("Failed to cancel download task with ID `{id}`");
+        CommandError::from(&err_msg, err)
+    })?;
+    tracing::debug!("Canceled download task with ID `{id}` successfully");
+    Ok(())
 }

@@ -42,6 +42,38 @@ async getComic(id: number) : Promise<Result<Comic, CommandError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async createDownloadTask(comic: Comic) : Promise<Result<null, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_download_task", { comic }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async pauseDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("pause_download_task", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async resumeDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("resume_download_task", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async cancelDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cancel_download_task", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -49,8 +81,12 @@ async getComic(id: number) : Promise<Result<Comic, CommandError>> {
 
 
 export const events = __makeEvents__<{
+downloadSpeedEvent: DownloadSpeedEvent,
+downloadTaskEvent: DownloadTaskEvent,
 logEvent: LogEvent
 }>({
+downloadSpeedEvent: "download-speed-event",
+downloadTaskEvent: "download-task-event",
 logEvent: "log-event"
 })
 
@@ -62,7 +98,11 @@ logEvent: "log-event"
 
 export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; dirName: string }
 export type CommandError = { err_title: string; err_message: string }
-export type Config = { downloadDir: string; enableFileLogger: boolean }
+export type Config = { downloadDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirNameFmt: string }
+export type DownloadFormat = "Webp" | "Avif"
+export type DownloadSpeedEvent = { speed: string }
+export type DownloadTaskEvent = { event: "Create"; data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number } } | { event: "Update"; data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number } }
+export type DownloadTaskState = "Pending" | "Downloading" | "Paused" | "Cancelled" | "Completed" | "Failed"
 export type GalleryFiles = { width: number; hash: string; haswebp?: number; hasavif?: number; hasjxl?: number; name: string; height: number }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 export type Language = { galleryid: number; language_localname: string; name: string }

@@ -4,11 +4,15 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri::{AppHandle, Manager};
 
+use crate::types::DownloadFormat;
+
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     pub download_dir: PathBuf,
     pub enable_file_logger: bool,
+    pub download_format: DownloadFormat,
+    pub dir_name_fmt: String,
 }
 
 impl Config {
@@ -67,6 +71,8 @@ impl Config {
         Config {
             download_dir: app_data_dir.join("download"),
             enable_file_logger: true,
+            download_format: DownloadFormat::Webp,
+            dir_name_fmt: "{title} - {id}".to_string(),
         }
     }
 }

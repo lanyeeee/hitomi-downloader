@@ -1,8 +1,10 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
+use bytes::Bytes;
 use parking_lot::RwLock;
+use reqwest::StatusCode;
 use reqwest_middleware::ClientWithMiddleware;
 use reqwest_retry::{policies::ExponentialBackoff, Jitter, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
@@ -25,6 +27,7 @@ pub struct LoginResp {
 pub struct HitomiClient {
     app: AppHandle,
     api_client: Arc<RwLock<ClientWithMiddleware>>,
+    img_client: Arc<RwLock<ClientWithMiddleware>>,
 }
 
 impl HitomiClient {
@@ -32,7 +35,14 @@ impl HitomiClient {
         let api_client = create_api_client(&app);
         let api_client = Arc::new(RwLock::new(api_client));
 
-        Self { app, api_client }
+        let img_client = create_img_client(&app);
+        let img_client = Arc::new(RwLock::new(img_client));
+
+        Self {
+            app,
+            api_client,
+            img_client,
+        }
     }
 
     pub fn get_api_client() -> Arc<RwLock<ClientWithMiddleware>> {
@@ -85,6 +95,26 @@ impl HitomiClient {
         let comic = Comic::from_gallery_info(&self.app, gallery).await?;
         Ok(comic)
     }
+
+    pub async fn get_img_data(&self, url: &str) -> anyhow::Result<Bytes> {
+        let request = self
+            .img_client
+            .read()
+            .get(url)
+            .header("referer", "https://hitomi.la/");
+        let http_resp = request.send().await?;
+        // check http response status code
+        let status = http_resp.status();
+        if status == StatusCode::SERVICE_UNAVAILABLE {
+            return Err(anyhow!("Failed after multiple retries, try again later"));
+        } else if status != StatusCode::OK {
+            let body = http_resp.text().await?;
+            return Err(anyhow!("Unexpected status code({status}): {body}"));
+        }
+        // get image data
+        let img_data = http_resp.bytes().await?;
+        Ok(img_data)
+    }
 }
 
 fn create_api_client(_app: &AppHandle) -> ClientWithMiddleware {
@@ -98,6 +128,19 @@ fn create_api_client(_app: &AppHandle) -> ClientWithMiddleware {
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .unwrap();
+
+    reqwest_middleware::ClientBuilder::new(client)
+        .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+        .build()
+}
+
+fn create_img_client(_app: &AppHandle) -> ClientWithMiddleware {
+    let retry_policy = ExponentialBackoff::builder()
+        .base(1)
+        .jitter(Jitter::Bounded)
+        .build_with_max_retries(20);
+
+    let client = reqwest::ClientBuilder::new().build().unwrap();
 
     reqwest_middleware::ClientBuilder::new(client)
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))

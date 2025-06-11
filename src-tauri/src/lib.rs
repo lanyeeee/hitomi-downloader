@@ -1,5 +1,6 @@
 mod commands;
 mod config;
+mod download_manager;
 mod errors;
 mod events;
 mod extensions;
@@ -11,7 +12,8 @@ mod utils;
 
 use anyhow::Context;
 use config::Config;
-use events::LogEvent;
+use download_manager::DownloadManager;
+use events::{DownloadSpeedEvent, DownloadTaskEvent, LogEvent};
 use hitomi_client::HitomiClient;
 use parking_lot::RwLock;
 use tauri::{Manager, Wry};
@@ -32,8 +34,16 @@ pub fn run() {
             search,
             get_page,
             get_comic,
+            create_download_task,
+            pause_download_task,
+            resume_download_task,
+            cancel_download_task,
         ])
-        .events(tauri_specta::collect_events![LogEvent]);
+        .events(tauri_specta::collect_events![
+            LogEvent,
+            DownloadTaskEvent,
+            DownloadSpeedEvent,
+        ]);
 
     #[cfg(debug_assertions)]
     builder
@@ -69,6 +79,9 @@ pub fn run() {
 
             let hitomi_client = HitomiClient::new(app.handle().clone());
             app.manage(hitomi_client);
+
+            let download_manager = DownloadManager::new(app.handle());
+            app.manage(download_manager);
 
             logger::init(app.handle())?;
 

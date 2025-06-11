@@ -14,7 +14,12 @@ async function greet() {
 
 async function test() {
   const result = await commands.getComic(2829145)
-  console.log(result)
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
+  const comic = result.data
+  await commands.createDownloadTask(comic)
 }
 </script>
 
