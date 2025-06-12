@@ -1,13 +1,10 @@
+use std::{path::PathBuf, time::SystemTime};
+
 use parking_lot::RwLock;
 use tauri::{AppHandle, State};
 
 use crate::{
-    config::Config,
-    download_manager::DownloadManager,
-    errors::{CommandError, CommandResult},
-    hitomi_client::HitomiClient,
-    logger,
-    types::{Comic, SearchResult},
+    config::Config, download_manager::DownloadManager, errors::{CommandError, CommandResult}, extensions::AnyhowErrorToStringChain, hitomi_client::HitomiClient, logger, types::{Comic, SearchResult}
 };
 
 #[tauri::command]
@@ -162,4 +159,59 @@ pub fn cancel_download_task(
     })?;
     tracing::debug!("Canceled download task with ID `{id}` successfully");
     Ok(())
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+#[allow(clippy::needless_pass_by_value)]
+pub fn get_downloaded_comics(
+    app: AppHandle,
+    config: State<RwLock<Config>>,
+) -> CommandResult<Vec<Comic>> {
+    let download_dir = config.read().download_dir.clone();
+    // Traverse the download directory to get the path and modification time of all metadata files
+    let entries = std::fs::read_dir(&download_dir);
+    let mut metadata_path_with_modify_time: Vec<(PathBuf, SystemTime)> = entries
+        .map_err(|err| {
+            let err_title = format!(
+                "Failed to get downloaded comics, failed to read download directory {}",
+                download_dir.display()
+            );
+            CommandError::from(&err_title, err)
+        })?
+        .filter_map(Result::ok)
+        .filter_map(|entry| {
+            let filename = entry.file_name();
+            if filename.to_string_lossy().starts_with(".downloading-") {
+                return None;
+            }
+            let metadata_path = entry.path().join("metadata.json");
+            if !metadata_path.exists() {
+                return None;
+            }
+            let modify_time = metadata_path.metadata().ok()?.modified().ok()?;
+            Some((metadata_path, modify_time))
+        })
+        .collect();
+    // Sort by file modification time, with the newest at the front
+    metadata_path_with_modify_time.sort_by(|(_, a), (_, b)| b.cmp(a));
+    // Read Comic from metadata file
+    let downloaded_comics: Vec<Comic> = metadata_path_with_modify_time
+        .iter()
+        .filter_map(|(metadata_path, _)| {
+            match Comic::from_metadata(&app, metadata_path).map_err(anyhow::Error::from) {
+                Ok(comic) => Some(comic),
+                Err(err) => {
+                    let err_title =
+                        format!("Failed to read metadata file `{}`", metadata_path.display());
+                    let string_chain = err.to_string_chain();
+                    tracing::error!(err_title, message = string_chain);
+                    None
+                }
+            }
+        })
+        .collect();
+
+    tracing::debug!("get downloaded comics success");
+    Ok(downloaded_comics)
 }
