@@ -221,6 +221,13 @@ impl Comic {
             .join(&self.dir_name)
     }
 
+    pub fn get_export_dir(&self, app: &AppHandle) -> PathBuf {
+        app.state::<RwLock<Config>>()
+            .read()
+            .export_dir
+            .join(&self.dir_name)
+    }
+
     pub fn get_temp_download_dir(&self, app: &AppHandle) -> PathBuf {
         let dir_name = &self.dir_name;
 

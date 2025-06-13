@@ -14,6 +14,12 @@ async function greet() {
 
 async function test() {
   const result = await commands.getDownloadedComics()
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
+  const comic = result.data[0]
+  await commands.exportPdf(comic)
   console.log(result)
 }
 </script>

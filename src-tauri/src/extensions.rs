@@ -18,3 +18,17 @@ impl AnyhowErrorToStringChain for anyhow::Error {
             })
     }
 }
+
+pub trait PathIsImg {
+    /// Check if the path is an image file
+    fn is_img(&self) -> bool;
+}
+
+impl PathIsImg for std::path::Path {
+    fn is_img(&self) -> bool {
+        self.extension()
+            .and_then(|ext| ext.to_str())
+            .map(str::to_lowercase)
+            .is_some_and(|ext| matches!(ext.as_str(), "webp" | "avif"))
+    }
+}

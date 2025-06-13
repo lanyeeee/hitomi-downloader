@@ -10,6 +10,7 @@ use crate::types::DownloadFormat;
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     pub download_dir: PathBuf,
+    pub export_dir: PathBuf,
     pub enable_file_logger: bool,
     pub download_format: DownloadFormat,
     pub dir_name_fmt: String,
@@ -70,6 +71,7 @@ impl Config {
     fn default(app_data_dir: &Path) -> Config {
         Config {
             download_dir: app_data_dir.join("download"),
+            export_dir: app_data_dir.join("export"),
             enable_file_logger: true,
             download_format: DownloadFormat::Webp,
             dir_name_fmt: "{title} - {id}".to_string(),

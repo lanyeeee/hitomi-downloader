@@ -46,6 +46,9 @@ sha2 = { version = "0.10.9" }
 indexmap = { version = "2.9.0" }
 strfmt = { version = "0.2.4" }
 bytes = { version = "1.10.1" }
+lopdf = { git = "https://github.com/lanyeeee/lopdf", features = ["embed_image_webp"] }
+uuid = { version = "1.16.0", features = ["v4"] }
+image = { version = "0.25.6", features = ["webp"], default-features = false }
 
 [profile.release]
 strip = true

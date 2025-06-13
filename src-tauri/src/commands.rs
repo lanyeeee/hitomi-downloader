@@ -4,7 +4,14 @@ use parking_lot::RwLock;
 use tauri::{AppHandle, State};
 
 use crate::{
-    config::Config, download_manager::DownloadManager, errors::{CommandError, CommandResult}, extensions::AnyhowErrorToStringChain, hitomi_client::HitomiClient, logger, types::{Comic, SearchResult}
+    config::Config,
+    download_manager::DownloadManager,
+    errors::{CommandError, CommandResult},
+    export,
+    extensions::AnyhowErrorToStringChain,
+    hitomi_client::HitomiClient,
+    logger,
+    types::{Comic, SearchResult},
 };
 
 #[tauri::command]
@@ -214,4 +221,16 @@ pub fn get_downloaded_comics(
 
     tracing::debug!("get downloaded comics success");
     Ok(downloaded_comics)
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+#[allow(clippy::needless_pass_by_value)]
+pub fn export_pdf(app: AppHandle, comic: Comic) -> CommandResult<()> {
+    let title = &comic.title;
+    export::pdf(&app, &comic).map_err(|err| {
+        CommandError::from(&format!("Failed to export pdf for comic `{title}`"), err)
+    })?;
+    tracing::debug!("Exported pdf for comic `{title}` successfully");
+    Ok(())
 }
