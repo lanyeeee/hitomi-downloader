@@ -1,27 +1,151 @@
 use std::{
-    io::Read,
+    io::{Read, Write},
     path::{Path, PathBuf},
 };
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
 use lopdf::{
     content::{Content, Operation},
     dictionary, Document, Object, Stream,
 };
 use tauri::AppHandle;
 use tauri_specta::Event;
+use zip::{write::SimpleFileOptions, ZipWriter};
 
-use crate::{events::ExportPdfEvent, extensions::PathIsImg, types::Comic};
+use crate::{
+    events::{ExportCbzEvent, ExportPdfEvent},
+    extensions::PathIsImg,
+    types::{Comic, ComicInfo},
+};
 
 enum Archive {
+    Cbz,
     Pdf,
 }
 impl Archive {
     pub fn extension(&self) -> &str {
         match self {
+            Archive::Cbz => "cbz",
             Archive::Pdf => "pdf",
         }
     }
+}
+
+struct CbzEventGuard {
+    uuid: String,
+    app: AppHandle,
+    success: bool,
+}
+
+impl Drop for CbzEventGuard {
+    fn drop(&mut self) {
+        if self.success {
+            let _ = ExportCbzEvent::End {
+                uuid: self.uuid.clone(),
+            }
+            .emit(&self.app);
+        } else {
+            let _ = ExportCbzEvent::Error {
+                uuid: self.uuid.clone(),
+            }
+            .emit(&self.app);
+        }
+    }
+}
+#[allow(clippy::cast_possible_wrap)]
+#[allow(clippy::cast_possible_truncation)]
+pub fn cbz(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
+    let comic_title = &comic.title;
+    // Generate formatted xml
+    let cfg = yaserde::ser::Config {
+        perform_indent: true,
+        ..Default::default()
+    };
+    let event_uuid = uuid::Uuid::new_v4().to_string();
+
+    let _ = ExportCbzEvent::Start {
+        uuid: event_uuid.clone(),
+        title: comic_title.clone(),
+    }
+    .emit(app);
+    // Event guard to ensure that the error event is sent if the function panics
+    let mut cbz_event_guard = CbzEventGuard {
+        uuid: event_uuid.clone(),
+        app: app.clone(),
+        success: false,
+    };
+
+    let download_dir = comic.get_download_dir(app);
+    let export_dir = comic.get_export_dir(app);
+    // Generate ComicInfo
+    let comic_info = ComicInfo::from(comic.clone());
+    // Serialize ComicInfo to xml
+    let comic_info_xml =
+        yaserde::ser::to_string_with_config(&comic_info, &cfg).map_err(|err_msg| {
+            anyhow!("`{comic_title}` failed to serialize `ComicInfo.xml`: {err_msg}")
+        })?;
+    // Ensure export directory exists
+    std::fs::create_dir_all(&export_dir).context(format!(
+        "`{comic_title}` failed to create directory `{}`",
+        export_dir.display()
+    ))?;
+    // Create cbz file
+    let extension = Archive::Cbz.extension();
+    let dir_name = &comic.dir_name;
+    let zip_path = export_dir.join(format!("{dir_name}.{extension}"));
+    let zip_file = std::fs::File::create(&zip_path).context(format!(
+        "`{comic_title}` failed to create file `{}`",
+        zip_path.display()
+    ))?;
+    let mut zip_writer = ZipWriter::new(zip_file);
+    // Write ComicInfo.xml into cbz
+    zip_writer
+        .start_file("ComicInfo.xml", SimpleFileOptions::default())
+        .context(format!(
+            "`{comic_title}` failed to create `ComicInfo.xml` in `{}`",
+            zip_path.display()
+        ))?;
+    zip_writer
+        .write_all(comic_info_xml.as_bytes())
+        .context(format!("`{comic_title}` failed to write `ComicInfo.xml`"))?;
+    // Iterate through download directory and write files into cbz
+    let image_paths = std::fs::read_dir(&download_dir)
+        .context(format!(
+            "`{comic_title}` failed to read directory `{}`",
+            download_dir.display()
+        ))?
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| path.is_img());
+    for image_path in image_paths {
+        let filename = match image_path.file_name() {
+            Some(name) => name.to_string_lossy(),
+            None => continue,
+        };
+        // Write file into cbz
+        zip_writer
+            .start_file(&filename, SimpleFileOptions::default())
+            .context(format!(
+                "`{comic_title}` failed to create `{filename}` in `{}`",
+                zip_path.display()
+            ))?;
+        let mut file = std::fs::File::open(&image_path)
+            .context(format!("Failed to open `{}`", image_path.display()))?;
+        std::io::copy(&mut file, &mut zip_writer).context(format!(
+            "`{comic_title}` failed to write `{}` to `{}`",
+            image_path.display(),
+            zip_path.display()
+        ))?;
+    }
+
+    zip_writer.finish().context(format!(
+        "`{comic_title}` failed to close `{}`",
+        zip_path.display()
+    ))?;
+    // Set success to true to ensure that the end event is sent
+    cbz_event_guard.success = true;
+
+    Ok(())
 }
 
 struct PdfEventGuard {

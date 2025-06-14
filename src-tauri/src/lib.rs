@@ -14,7 +14,7 @@ mod utils;
 use anyhow::Context;
 use config::Config;
 use download_manager::DownloadManager;
-use events::{DownloadSpeedEvent, DownloadTaskEvent, ExportPdfEvent, LogEvent};
+use events::{DownloadSpeedEvent, DownloadTaskEvent, ExportCbzEvent, ExportPdfEvent, LogEvent};
 use hitomi_client::HitomiClient;
 use parking_lot::RwLock;
 use tauri::{Manager, Wry};
@@ -41,12 +41,14 @@ pub fn run() {
             cancel_download_task,
             get_downloaded_comics,
             export_pdf,
+            export_cbz,
         ])
         .events(tauri_specta::collect_events![
             LogEvent,
             DownloadTaskEvent,
             DownloadSpeedEvent,
             ExportPdfEvent,
+            ExportCbzEvent,
         ]);
 
     #[cfg(debug_assertions)]

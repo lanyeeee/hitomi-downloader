@@ -90,6 +90,14 @@ async exportPdf(comic: Comic) : Promise<Result<null, CommandError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async exportCbz(comic: Comic) : Promise<Result<null, CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("export_cbz", { comic }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -99,11 +107,13 @@ async exportPdf(comic: Comic) : Promise<Result<null, CommandError>> {
 export const events = __makeEvents__<{
 downloadSpeedEvent: DownloadSpeedEvent,
 downloadTaskEvent: DownloadTaskEvent,
+exportCbzEvent: ExportCbzEvent,
 exportPdfEvent: ExportPdfEvent,
 logEvent: LogEvent
 }>({
 downloadSpeedEvent: "download-speed-event",
 downloadTaskEvent: "download-task-event",
+exportCbzEvent: "export-cbz-event",
 exportPdfEvent: "export-pdf-event",
 logEvent: "log-event"
 })
@@ -121,6 +131,7 @@ export type DownloadFormat = "Webp" | "Avif"
 export type DownloadSpeedEvent = { speed: string }
 export type DownloadTaskEvent = { event: "Create"; data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number } } | { event: "Update"; data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number } }
 export type DownloadTaskState = "Pending" | "Downloading" | "Paused" | "Cancelled" | "Completed" | "Failed"
+export type ExportCbzEvent = { event: "Start"; data: { uuid: string; title: string } } | { event: "Error"; data: { uuid: string } } | { event: "End"; data: { uuid: string } }
 export type ExportPdfEvent = { event: "Start"; data: { uuid: string; title: string } } | { event: "Error"; data: { uuid: string } } | { event: "End"; data: { uuid: string } }
 export type GalleryFiles = { width: number; hash: string; haswebp?: number; hasavif?: number; hasjxl?: number; name: string; height: number }
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }

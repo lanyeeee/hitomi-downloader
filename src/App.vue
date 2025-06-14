@@ -19,7 +19,7 @@ async function test() {
     return
   }
   const comic = result.data[0]
-  await commands.exportPdf(comic)
+  await commands.exportCbz(comic)
   console.log(result)
 }
 </script>
