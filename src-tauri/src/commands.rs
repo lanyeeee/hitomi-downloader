@@ -9,6 +9,7 @@ use crate::{
     errors::{CommandError, CommandResult},
     export,
     extensions::AnyhowErrorToStringChain,
+    hitomi::Suggestion,
     hitomi_client::HitomiClient,
     logger,
     types::{Comic, SearchResult},
@@ -245,4 +246,19 @@ pub fn export_cbz(app: AppHandle, comic: Comic) -> CommandResult<()> {
     })?;
     tracing::debug!("Exported cbz for comic `{title}` successfully");
     Ok(())
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+#[allow(clippy::needless_pass_by_value)]
+pub async fn get_search_suggestions(
+    hitomi_client: State<'_, HitomiClient>,
+    query: String,
+) -> CommandResult<Vec<Suggestion>> {
+    let suggestions = hitomi_client
+        .get_search_suggestions(&query)
+        .await
+        .map_err(|err| CommandError::from("Failed to get search suggestions", err))?;
+    tracing::debug!("get search suggestions success");
+    Ok(suggestions)
 }

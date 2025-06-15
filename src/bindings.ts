@@ -98,6 +98,14 @@ async exportCbz(comic: Comic) : Promise<Result<null, CommandError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async getSearchSuggestions(query: string) : Promise<Result<Suggestion[], CommandError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_search_suggestions", { query }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -139,6 +147,7 @@ export type Language = { galleryid: number; language_localname: string; name: st
 export type LogEvent = { timestamp: string; level: LogLevel; fields: { [key in string]: JsonValue }; target: string; filename: string; line_number: number }
 export type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR"
 export type SearchResult = { comics: Comic[]; currentPage: number; totalPage: number; ids: number[] }
+export type Suggestion = { s: string; t: number; u: string; n: string }
 export type Tag = { tag: string; female: number; male: number }
 
 /** tauri-specta globals **/

@@ -13,13 +13,7 @@ async function greet() {
 }
 
 async function test() {
-  const result = await commands.getDownloadedComics()
-  if (result.status === 'error') {
-    console.error(result.error)
-    return
-  }
-  const comic = result.data[0]
-  await commands.exportCbz(comic)
+  const result = await commands.getSearchSuggestions('c9')
   console.log(result)
 }
 </script>

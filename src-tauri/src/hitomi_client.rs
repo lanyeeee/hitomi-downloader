@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 
 use crate::{
-    hitomi::{self},
+    hitomi::{self, Suggestion},
     types::{Comic, SearchResult},
     utils::get_app_handle,
 };
@@ -114,6 +114,11 @@ impl HitomiClient {
         // get image data
         let img_data = http_resp.bytes().await?;
         Ok(img_data)
+    }
+
+    pub async fn get_search_suggestions(&self, query: &str) -> anyhow::Result<Vec<Suggestion>> {
+        let suggestion = hitomi::get_suggestions_for_query(query).await?;
+        Ok(suggestion)
     }
 }
 
