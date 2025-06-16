@@ -1,8 +1,20 @@
 {
   "name": "中文(简体)",
-  "hello": {
-    "world": "你好世界！"
+  "app_content": {
+    "save_config_success": "保存配置成功",
+    "logs_directory_size_too_big": "日志目录大小超过50MB",
+    "log_cleanup_reminder": "请及时清理日志文件",
+    "click_top_center": "点击中上方的",
+    "there_is": "里边有",
+    "you_can_also_uncheck": "你也可以在里边取消勾选",
+    "this_will_disable_file_logging": "这样将不再产生文件日志"
   },
-  "test": "测试",
-  "greet": "你好，{name}！"
+  "log_viewer": {
+    "name": "日志",
+    "logs_directory_size": "日志目录总大小",
+    "search_placeholder": "搜索日志...",
+    "open_logs_directory": "打开日志目录",
+    "enable_file_logging": "输出文件日志",
+    "clear_log_viewer": "清空日志浏览器"
+  }
 }

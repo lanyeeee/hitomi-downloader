@@ -1,7 +1,9 @@
 use std::{path::PathBuf, time::SystemTime};
 
+use anyhow::Context;
 use parking_lot::RwLock;
 use tauri::{AppHandle, State};
+use tauri_plugin_opener::OpenerExt;
 
 use crate::{
     config::Config,
@@ -261,4 +263,37 @@ pub async fn get_search_suggestions(
         .map_err(|err| CommandError::from("Failed to get search suggestions", err))?;
     tracing::debug!("get search suggestions success");
     Ok(suggestions)
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn get_logs_dir_size(app: AppHandle) -> CommandResult<u64> {
+    let logs_dir = logger::logs_dir(&app)
+        .context("Failed to get logs directory")
+        .map_err(|err| CommandError::from("Failed to get logs directory size", err))?;
+    let logs_dir_size = std::fs::read_dir(&logs_dir)
+        .context(format!(
+            "Failed to read logs directory `{}`",
+            logs_dir.display()
+        ))
+        .map_err(|err| CommandError::from("Failed to get logs directory size", err))?
+        .filter_map(Result::ok)
+        .filter_map(|entry| entry.metadata().ok())
+        .map(|metadata| metadata.len())
+        .sum::<u64>();
+    tracing::debug!("get logs directory size success");
+    Ok(logs_dir_size)
+}
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn show_path_in_file_manager(app: AppHandle, path: &str) -> CommandResult<()> {
+    app.opener()
+        .reveal_item_in_dir(path)
+        .context(format!("Failed to open `{path}` in file manager"))
+        .map_err(|err| CommandError::from("Failed to open in file manager", err))?;
+    tracing::debug!("Opened in file manager successfully");
+    Ok(())
 }
