@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { h, onMounted, ref, watch } from 'vue'
+<script setup lang="tsx">
+import { onMounted, ref, watch } from 'vue'
 import { useMessage, useNotification } from 'naive-ui'
 import { commands } from './bindings.ts'
 import { useStore } from './store.ts'
@@ -46,18 +46,23 @@ onMounted(async () => {
     notification.warning({
       title: () => t('app_content.logs_directory_size_too_big'),
       description: () => t('app_content.log_cleanup_reminder'),
-      content: () => [
-        h('div', [t('app_content.click_top_center'), h('span', { class: 'bg-gray-2 px-1' }, t('log_viewer.name'))]),
-        h('div', [
-          t('app_content.there_is'),
-          h('span', { class: 'bg-gray-2 px-1' }, t('log_viewer.open_logs_directory')),
-        ]),
-        h('div', [
-          t('app_content.you_can_also_uncheck'),
-          h('span', { class: 'bg-gray-2 px-1' }, t('log_viewer.enable_file_logging')),
-        ]),
-        h('div', t('app_content.this_will_disable_file_logging')),
-      ],
+      content: () => (
+          <>
+            <div>
+              {t('app_content.click_top_center')}
+              <span class="bg-gray-2 px-1">{t('log_viewer.name')}</span>
+            </div>
+            <div>
+              {t('app_content.there_is')}
+              <span class="bg-gray-2 px-1">{t('log_viewer.open_logs_directory')}</span>
+            </div>
+            <div>
+              {t('app_content.you_can_also_uncheck')}
+              <span class="bg-gray-2 px-1">{t('log_viewer.enable_file_logging')}</span>
+            </div>
+            <div>{t('app_content.this_will_disable_file_logging')}</div>
+          </>
+      ),
     })
   }
 })
