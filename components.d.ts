@@ -8,7 +8,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AboutDialog: typeof import('./src/components/AboutDialog.vue')['default']
     LogViewer: typeof import('./src/components/LogViewer.vue')['default']
+    NA: typeof import('naive-ui')['NA']
     NButton: typeof import('naive-ui')['NButton']
     NCheckbox: typeof import('naive-ui')['NCheckbox']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']

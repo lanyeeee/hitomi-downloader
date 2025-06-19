@@ -5,6 +5,7 @@ import { commands } from './bindings.ts'
 import { useStore } from './store.ts'
 import LogViewer from './components/LogViewer.vue'
 import { useI18n } from './utils.ts'
+import AboutDialog from './components/AboutDialog.vue'
 
 const { t } = useI18n()
 
@@ -14,6 +15,7 @@ const message = useMessage()
 const notification = useNotification()
 
 const logViewerShowing = ref<boolean>(false)
+const aboutDialogShowing = ref<boolean>(false)
 
 watch(
     () => store.config,
@@ -65,8 +67,10 @@ onMounted(async () => {
   <div v-if="store.config !== undefined" class="h-screen flex flex-col">
     <div class="flex">
       <n-button @click="logViewerShowing = true">{{ t('log_viewer.name') }}</n-button>
+      <n-button @click="aboutDialogShowing = true">{{ t('about_dialog.name') }}</n-button>
     </div>
     <log-viewer v-model:showing="logViewerShowing" />
+    <about-dialog v-model:showing="aboutDialogShowing" />
   </div>
 </template>
 <style scoped>

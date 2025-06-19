@@ -16,5 +16,13 @@
     "open_logs_directory": "打开日志目录",
     "enable_file_logging": "输出文件日志",
     "clear_log_viewer": "清空日志浏览器"
+  },
+  "about_dialog": {
+    "name": "关于",
+    "support_message": "如果本项目对你有帮助，欢迎来 {github} 点个Star⭐支持！",
+    "motivation_message": "你的支持是我持续更新维护的动力🙏",
+    "software_version": "软件版本",
+    "source_code_repository": "开源地址",
+    "feedback": "问题反馈"
   }
 }
