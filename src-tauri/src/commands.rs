@@ -297,3 +297,17 @@ pub fn show_path_in_file_manager(app: AppHandle, path: &str) -> CommandResult<()
     tracing::debug!("Opened in file manager successfully");
     Ok(())
 }
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn get_cover_data(
+    hitomi_client: State<'_, HitomiClient>,
+    cover_url: String,
+) -> CommandResult<Vec<u8>> {
+    let cover_data = hitomi_client
+        .get_cover_data(&cover_url)
+        .await
+        .map_err(|err| CommandError::from("Failed to get cover", err))?;
+    Ok(cover_data.to_vec())
+}

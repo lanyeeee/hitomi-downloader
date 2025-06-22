@@ -9,19 +9,28 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AboutDialog: typeof import('./src/components/AboutDialog.vue')['default']
+    ComicCard: typeof import('./src/components/ComicCard.vue')['default']
+    FloatLabelInput: typeof import('./src/components/FloatLabelInput.vue')['default']
     LogViewer: typeof import('./src/components/LogViewer.vue')['default']
     NA: typeof import('naive-ui')['NA']
     NButton: typeof import('naive-ui')['NButton']
+    NCard: typeof import('naive-ui')['NCard']
     NCheckbox: typeof import('naive-ui')['NCheckbox']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NDialog: typeof import('naive-ui')['NDialog']
+    NEl: typeof import('naive-ui')['NEl']
+    NEmpty: typeof import('naive-ui')['NEmpty']
+    NIcon: typeof import('naive-ui')['NIcon']
     NInput: typeof import('naive-ui')['NInput']
     NInputGroup: typeof import('naive-ui')['NInputGroup']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
     NModalProvider: typeof import('naive-ui')['NModalProvider']
     NNotificationProvider: typeof import('naive-ui')['NNotificationProvider']
+    NPagination: typeof import('naive-ui')['NPagination']
     NSelect: typeof import('naive-ui')['NSelect']
+    NTabPane: typeof import('naive-ui')['NTabPane']
+    NTabs: typeof import('naive-ui')['NTabs']
     NVirtualList: typeof import('naive-ui')['NVirtualList']
   }
 }

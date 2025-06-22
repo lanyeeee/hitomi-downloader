@@ -45,6 +45,7 @@ pub fn run() {
             get_search_suggestions,
             get_logs_dir_size,
             show_path_in_file_manager,
+            get_cover_data,
         ])
         .events(tauri_specta::collect_events![
             LogEvent,

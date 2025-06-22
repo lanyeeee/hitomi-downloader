@@ -4,7 +4,7 @@ use std::time::Duration;
 use anyhow::{anyhow, Context};
 use bytes::Bytes;
 use parking_lot::RwLock;
-use reqwest::StatusCode;
+use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientWithMiddleware;
 use reqwest_retry::{policies::ExponentialBackoff, Jitter, RetryTransientMiddleware};
 use serde::{Deserialize, Serialize};
@@ -28,6 +28,7 @@ pub struct HitomiClient {
     app: AppHandle,
     api_client: Arc<RwLock<ClientWithMiddleware>>,
     img_client: Arc<RwLock<ClientWithMiddleware>>,
+    cover_client: Arc<RwLock<Client>>,
 }
 
 impl HitomiClient {
@@ -38,10 +39,14 @@ impl HitomiClient {
         let img_client = create_img_client(&app);
         let img_client = Arc::new(RwLock::new(img_client));
 
+        let cover_client = create_cover_client(&app);
+        let cover_client = Arc::new(RwLock::new(cover_client));
+
         Self {
             app,
             api_client,
             img_client,
+            cover_client,
         }
     }
 
@@ -120,6 +125,23 @@ impl HitomiClient {
         let suggestion = hitomi::get_suggestions_for_query(query).await?;
         Ok(suggestion)
     }
+
+    pub async fn get_cover_data(&self, cover_url: &str) -> anyhow::Result<Bytes> {
+        let request = self
+            .cover_client
+            .read()
+            .get(cover_url)
+            .header("referer", "https://hitomi.la/");
+        let http_resp = request.send().await?;
+        // check http response status code
+        let status = http_resp.status();
+        if status != StatusCode::OK {
+            let body = http_resp.text().await?;
+            return Err(anyhow!("Unexpected status code({status}): {body}"));
+        }
+        let cover_data = http_resp.bytes().await?;
+        Ok(cover_data)
+    }
 }
 
 fn create_api_client(_app: &AppHandle) -> ClientWithMiddleware {
@@ -150,4 +172,8 @@ fn create_img_client(_app: &AppHandle) -> ClientWithMiddleware {
     reqwest_middleware::ClientBuilder::new(client)
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build()
+}
+
+fn create_cover_client(_app: &AppHandle) -> Client {
+    reqwest::ClientBuilder::new().build().unwrap()
 }
