@@ -3,7 +3,9 @@ import { useStore } from '../store.ts'
 import { commands } from '../bindings.ts'
 import { computed, watch, ref, nextTick } from 'vue'
 import { useI18n } from '../utils.ts'
+import DownloadButton from '../components/DownloadButton.vue'
 import { ReloadOutline } from '@vicons/ionicons5'
+import { path } from '@tauri-apps/api'
 
 const { t } = useI18n()
 
@@ -45,6 +47,17 @@ async function pickComic(id: number) {
   }
   store.pickedComic = result.data
 }
+
+async function showComicDownloadDirInFileManager() {
+  if (store.pickedComic === undefined || store.config === undefined) {
+    return
+  }
+  const comicDir = await path.join(store.config.downloadDir, store.pickedComic.dirName)
+  const result = await commands.showPathInFileManager(comicDir)
+  if (result.status === 'error') {
+    console.error(result.error)
+  }
+}
 </script>
 
 <template>
@@ -83,6 +96,17 @@ async function pickComic(id: number) {
               {{ language.language_localname }}
             </n-button>
           </div>
+        </div>
+        <div class="flex flex-col gap-row-2">
+          <n-button v-if="store.pickedComic.isDownloaded" size="small" @click="showComicDownloadDirInFileManager">
+            {{ t('common.open_directory') }}
+          </n-button>
+          <download-button
+            class="mt-auto"
+            size="small"
+            type="primary"
+            :comic-id="store.pickedComic.id"
+            :comic-downloaded="store.pickedComic.isDownloaded === true" />
         </div>
       </div>
     </div>
@@ -174,7 +198,7 @@ async function pickComic(id: number) {
             class="hover:scale-110 transition-transform duration-100'"
             :color="female !== 0 ? '#F472B6' : male !== 0 ? '#60A5FA' : undefined"
             size="tiny"
-            @click="search(`${female !== 0 ? 'female' : male !== 0 ? 'male' : 'tag'}: ${tag.replace(' ', '_')}`, 1)">
+            @click="search(`${female !== 0 ? 'female' : male !== 0 ? 'male' : 'tag'}:${tag.replace(' ', '_')}`, 1)">
             {{ tag }}
           </n-button>
         </div>

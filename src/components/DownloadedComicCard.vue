@@ -3,7 +3,6 @@ import { computed, onMounted } from 'vue'
 import { Comic, commands } from '../bindings.ts'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import DownloadButton from './DownloadButton.vue'
 import { ReloadOutline } from '@vicons/ionicons5'
 import { path } from '@tauri-apps/api'
 
@@ -26,10 +25,25 @@ onMounted(() => {
   store.loadCover(props.comic.id, props.comic.coverUrl)
 })
 
-// Get comic information, store the comic information in pickedComic, and switch to comic details
 async function pickComic() {
   store.pickedComic = props.comic
   store.currentTabName = 'comic'
+}
+
+async function exportCbz() {
+  const result = await commands.exportCbz(props.comic)
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
+}
+
+async function exportPdf() {
+  const result = await commands.exportPdf(props.comic)
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
 }
 
 async function showComicDownloadDirInFileManager() {
@@ -114,16 +128,16 @@ async function showComicDownloadDirInFileManager() {
           <div>{{ comic.date }}</div>
           <div class="ml-auto">{{ comic.files.length }}P</div>
         </div>
-        <div class="flex mt-auto">
-          <n-button v-if="comic.isDownloaded === true" size="tiny" @click="showComicDownloadDirInFileManager">
+        <div v-if="comic.isDownloaded === true" class="flex mt-auto gap-1">
+          <n-button size="tiny" @click="showComicDownloadDirInFileManager">
             {{ t('common.open_directory') }}
           </n-button>
-          <download-button
-            type="primary"
-            class="ml-auto"
-            size="tiny"
-            :comic-id="comic.id"
-            :comic-downloaded="comic.isDownloaded === true" />
+          <n-button type="primary" class="ml-auto" size="tiny" @click="exportPdf">
+            {{ t('common.export_pdf') }}
+          </n-button>
+          <n-button type="primary" size="tiny" @click="exportCbz">
+            {{ t('common.export_cbz') }}
+          </n-button>
         </div>
       </div>
     </div>

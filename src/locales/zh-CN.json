@@ -8,7 +8,15 @@
     "type": "类型",
     "language": "语言",
     "tag": "标签",
-    "open_directory": "打开目录"
+    "open_directory": "打开目录",
+    "export_pdf": "导出pdf",
+    "export_cbz": "导出cbz",
+    "download_directory": "下载目录",
+    "export_directory": "导出目录",
+    "select_all": "全选",
+    "continue": "继续",
+    "pause": "暂停",
+    "cancel": "取消"
   },
   "app_content": {
     "save_config_success": "保存配置成功",
@@ -47,7 +55,13 @@
   },
   "downloaded_pane": {
     "name": "本地库存",
-    "empty_description": "请先下载漫画"
+    "empty_description": "请先下载漫画",
+    "pdf_exporting": "正在导出pdf",
+    "pdf_export_error": "pdf导出失败",
+    "pdf_exported": "pdf导出完成",
+    "cbz_exporting": "正在导出cbz",
+    "cbz_export_error": "cbz导出失败",
+    "cbz_exported": "cbz导出完成"
   },
   "comic_pane": {
     "name": "漫画详情",
@@ -55,6 +69,25 @@
     "empty_description": "请先选择漫画(@:search_pane.name @:downloaded_pane.name)"
   },
   "downloading_pane": {
-    "name": "下载列表"
+    "name": "下载列表",
+    "pending": "排队中",
+    "downloading": "下载中",
+    "paused": "已暂停",
+    "cancelled": "已取消",
+    "completed": "下载完成",
+    "failed": "下载失败",
+    "download_speed": "下载速度"
+  },
+  "uncompleted_progresses": {
+    "name": "未完成",
+    "usage_tips": "左键拖动进行框选，右键打开菜单，双击暂停/继续"
+  },
+  "completed_progresses": {
+    "name": "已完成"
+  },
+  "download_button": {
+    "quick_download": "一键下载",
+    "resume_download": "继续下载",
+    "download_again": "重新下载"
   }
 }
