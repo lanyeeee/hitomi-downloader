@@ -9,11 +9,11 @@ export type SupportedLocales = keyof typeof locales
 export type MessageSchema = (typeof locales)['zh-CN']
 
 export const i18n = createI18n<[MessageSchema], SupportedLocales>({
-    locale: 'zh-CN',
-    fallbackLocale: 'zh-CN',
-    globalInjection: true,
-    legacy: false,
-    messages: locales,
+  locale: 'zh-CN',
+  fallbackLocale: 'zh-CN',
+  globalInjection: true,
+  legacy: false,
+  messages: locales,
 })
 
 const pinia = createPinia()

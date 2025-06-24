@@ -49,7 +49,9 @@ onMounted(async () => {
           </div>
           <div>
             Released under
-            <n-a href="https://github.com/lanyeeee/hitomi-downloader/blob/main/LICENSE" target="_blank">MIT License</n-a>
+            <n-a href="https://github.com/lanyeeee/hitomi-downloader/blob/main/LICENSE" target="_blank">
+              MIT License
+            </n-a>
           </div>
         </div>
       </div>

@@ -24,12 +24,12 @@ const comicCardContainerRef = ref<HTMLElement>()
 const searching = ref<boolean>(false)
 
 watch(
-    () => store.searchResult,
-    () => {
-      if (comicCardContainerRef.value !== undefined) {
-        comicCardContainerRef.value.scrollTo({ top: 0, behavior: 'instant' })
-      }
-    },
+  () => store.searchResult,
+  () => {
+    if (comicCardContainerRef.value !== undefined) {
+      comicCardContainerRef.value.scrollTo({ top: 0, behavior: 'instant' })
+    }
+  },
 )
 
 async function search(query: string, pageNum: number) {
@@ -114,12 +114,12 @@ defineExpose({ search })
   <div class="h-full flex flex-col gap-2">
     <n-input-group class="box-border px-2 pt-2">
       <FloatLabelInput
-          :label="t('search_pane.search_by_query')"
-          ref="searchInputRef"
-          size="small"
-          v-model:value="searchInput"
-          clearable
-          @keydown.enter="search(searchInput.trim(), 1)" />
+        :label="t('search_pane.search_by_query')"
+        ref="searchInputRef"
+        size="small"
+        v-model:value="searchInput"
+        clearable
+        @keydown.enter="search(searchInput.trim(), 1)" />
       <n-button :loading="searching" type="primary" class="w-15%" size="small" @click="search(searchInput.trim(), 1)">
         <template #icon>
           <n-icon size="22">
@@ -131,12 +131,12 @@ defineExpose({ search })
 
     <n-input-group class="box-border px-2">
       <FloatLabelInput
-          :label="t('search_pane.search_by_id')"
-          class="text-align-left"
-          size="small"
-          v-model:value="comicIdInput"
-          clearable
-          @keydown.enter="pickComic" />
+        :label="t('search_pane.search_by_id')"
+        class="text-align-left"
+        size="small"
+        v-model:value="comicIdInput"
+        clearable
+        @keydown.enter="pickComic" />
       <n-button type="primary" class="w-15%" size="small" @click="pickComic">
         <template #icon>
           <n-icon size="22">
@@ -147,21 +147,21 @@ defineExpose({ search })
     </n-input-group>
 
     <div
-        v-if="store.searchResult !== undefined"
-        ref="comicCardContainerRef"
-        class="flex flex-col gap-row-2 overflow-auto box-border px-2">
+      v-if="store.searchResult !== undefined"
+      ref="comicCardContainerRef"
+      class="flex flex-col gap-row-2 overflow-auto box-border px-2">
       <comic-card
-          v-for="(comic, index) in store.searchResult.comics"
-          :key="comic.id"
-          :search="search"
-          v-model:comic="store.searchResult.comics[index]" />
+        v-for="(comic, index) in store.searchResult.comics"
+        :key="comic.id"
+        :search="search"
+        v-model:comic="store.searchResult.comics[index]" />
     </div>
 
     <n-pagination
-        v-if="store.searchResult !== undefined"
-        class="box-border p-2 pt-0 mt-auto"
-        :page-count="store.searchResult.totalPage"
-        :page="currentPage"
-        @update:page="handlePageChange" />
+      v-if="store.searchResult !== undefined"
+      class="box-border p-2 pt-0 mt-auto"
+      :page-count="store.searchResult.totalPage"
+      :page="currentPage"
+      @update:page="handlePageChange" />
   </div>
 </template>
