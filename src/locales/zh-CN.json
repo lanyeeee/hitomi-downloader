@@ -66,7 +66,8 @@
   "comic_pane": {
     "name": "漫画详情",
     "other_language": "其他语言",
-    "empty_description": "请先选择漫画(@:search_pane.name @:downloaded_pane.name)"
+    "empty_description": "请先选择漫画(@:search_pane.name @:downloaded_pane.name)",
+    "related": "相关漫画"
   },
   "downloading_pane": {
     "name": "下载列表",

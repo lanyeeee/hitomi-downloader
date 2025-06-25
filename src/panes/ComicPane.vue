@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useStore } from '../store.ts'
-import { commands } from '../bindings.ts'
+import { Comic, commands } from '../bindings.ts'
 import { computed, watch, ref, nextTick } from 'vue'
 import { useI18n } from '../utils.ts'
 import DownloadButton from '../components/DownloadButton.vue'
 import { ReloadOutline } from '@vicons/ionicons5'
+import ComicCard from '../components/ComicCard.vue'
 import { path } from '@tauri-apps/api'
 
 const { t } = useI18n()
@@ -15,6 +16,7 @@ defineProps<{
 
 const store = useStore()
 
+const relatedComics = ref<Comic[]>([])
 const containerRef = ref<HTMLElement>()
 
 const cover = computed<string | undefined>(() =>
@@ -36,6 +38,8 @@ watch(
     if (cover.value === undefined) {
       store.loadCover(store.pickedComic.id, store.pickedComic.coverUrl)
     }
+
+    reloadRelatedComics()
   },
 )
 
@@ -46,6 +50,26 @@ async function pickComic(id: number) {
     return
   }
   store.pickedComic = result.data
+}
+
+async function reloadRelatedComics() {
+  console.log('reloadRelatedComics')
+  if (store.pickedComic === undefined) {
+    return
+  }
+
+  relatedComics.value = []
+
+  const promises = store.pickedComic.related.map(async (id) => {
+    const result = await commands.getComic(id)
+    if (result.status === 'error') {
+      console.error(result.error)
+      return
+    }
+    relatedComics.value.push(result.data)
+  })
+
+  await Promise.all(promises)
 }
 
 async function showComicDownloadDirInFileManager() {
@@ -201,6 +225,12 @@ async function showComicDownloadDirInFileManager() {
             @click="search(`${female !== 0 ? 'female' : male !== 0 ? 'male' : 'tag'}:${tag.replace(' ', '_')}`, 1)">
             {{ tag }}
           </n-button>
+        </div>
+      </div>
+      <div>
+        <div class="font-bold">{{ t('comic_pane.related') }}</div>
+        <div class="flex flex-wrap gap-1">
+          <ComicCard v-for="comic in relatedComics" :key="comic.id" :comic="comic" :search="search" />
         </div>
       </div>
     </div>
