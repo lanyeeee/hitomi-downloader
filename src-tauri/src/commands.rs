@@ -37,9 +37,17 @@ pub fn get_config(config: State<RwLock<Config>>) -> Config {
 #[allow(clippy::needless_pass_by_value)]
 pub fn save_config(
     app: AppHandle,
+    hitomi_client: State<HitomiClient>,
     config_state: State<RwLock<Config>>,
     config: Config,
 ) -> CommandResult<()> {
+    let proxy_changed = {
+        let config_state = config_state.read();
+        config_state.proxy_mode != config.proxy_mode
+            || config_state.proxy_host != config.proxy_host
+            || config_state.proxy_port != config.proxy_port
+    };
+
     let enable_file_logger = config.enable_file_logger;
     let enable_file_logger_changed = config_state
         .read()
@@ -54,6 +62,10 @@ pub fn save_config(
             .save(&app)
             .map_err(|err| CommandError::from("save config failed", err))?;
         tracing::debug!("save config success");
+    }
+
+    if proxy_changed {
+        hitomi_client.reload_client();
     }
 
     if enable_file_logger_changed {

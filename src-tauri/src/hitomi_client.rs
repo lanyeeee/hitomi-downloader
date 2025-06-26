@@ -11,8 +11,10 @@ use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 
 use crate::{
+    config::Config,
+    extensions::AnyhowErrorToStringChain,
     hitomi::{self, Suggestion},
-    types::{Comic, SearchResult},
+    types::{Comic, ProxyMode, SearchResult},
     utils::get_app_handle,
 };
 
@@ -55,6 +57,18 @@ impl HitomiClient {
         let hitomi_client = app.state::<HitomiClient>();
         hitomi_client.api_client.clone()
     }
+
+    pub fn reload_client(&self) {
+        let api_client = create_api_client(&self.app);
+        *self.api_client.write() = api_client;
+
+        let img_client = create_img_client(&self.app);
+        *self.img_client.write() = img_client;
+
+        let cover_client = create_cover_client(&self.app);
+        *self.cover_client.write() = cover_client;
+    }
+
     pub async fn search(
         &self,
         query: &str,
@@ -144,13 +158,14 @@ impl HitomiClient {
     }
 }
 
-fn create_api_client(_app: &AppHandle) -> ClientWithMiddleware {
+fn create_api_client(app: &AppHandle) -> ClientWithMiddleware {
     let retry_policy = ExponentialBackoff::builder()
         .base(1)
         .jitter(Jitter::Bounded)
         .build_with_total_retry_duration(Duration::from_secs(5));
 
     let client = reqwest::ClientBuilder::new()
+        .set_proxy(app, "api_client")
         .timeout(Duration::from_secs(3))
         .redirect(reqwest::redirect::Policy::none())
         .build()
@@ -161,19 +176,57 @@ fn create_api_client(_app: &AppHandle) -> ClientWithMiddleware {
         .build()
 }
 
-fn create_img_client(_app: &AppHandle) -> ClientWithMiddleware {
+fn create_img_client(app: &AppHandle) -> ClientWithMiddleware {
     let retry_policy = ExponentialBackoff::builder()
         .base(1)
         .jitter(Jitter::Bounded)
         .build_with_max_retries(20);
 
-    let client = reqwest::ClientBuilder::new().build().unwrap();
+    let client = reqwest::ClientBuilder::new()
+        .set_proxy(app, "img_client")
+        .build()
+        .unwrap();
 
     reqwest_middleware::ClientBuilder::new(client)
         .with(RetryTransientMiddleware::new_with_policy(retry_policy))
         .build()
 }
 
-fn create_cover_client(_app: &AppHandle) -> Client {
-    reqwest::ClientBuilder::new().build().unwrap()
+fn create_cover_client(app: &AppHandle) -> Client {
+    reqwest::ClientBuilder::new()
+        .set_proxy(app, "cover_client")
+        .build()
+        .unwrap()
+}
+
+trait ClientBuilderExt {
+    fn set_proxy(self, app: &AppHandle, client_name: &str) -> Self;
+}
+
+impl ClientBuilderExt for reqwest::ClientBuilder {
+    fn set_proxy(self, app: &AppHandle, client_name: &str) -> reqwest::ClientBuilder {
+        let proxy_mode = app.state::<RwLock<Config>>().read().proxy_mode;
+        match proxy_mode {
+            ProxyMode::System => self,
+            ProxyMode::NoProxy => self.no_proxy(),
+            ProxyMode::Custom => {
+                let config = app.state::<RwLock<Config>>();
+                let config = config.read();
+                let proxy_host = &config.proxy_host;
+                let proxy_port = &config.proxy_port;
+                let proxy_url = format!("http://{proxy_host}:{proxy_port}");
+
+                match reqwest::Proxy::all(&proxy_url).map_err(anyhow::Error::from) {
+                    Ok(proxy) => self.proxy(proxy),
+                    Err(err) => {
+                        let err_title =
+                            format!("{client_name} failed to set proxy `{proxy_url}`, use system proxy instead");
+                        let string_chain = err.to_string_chain();
+                        tracing::error!(err_title, message = string_chain);
+                        self
+                    }
+                }
+            }
+        }
+    }
 }

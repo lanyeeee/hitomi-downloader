@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri::{AppHandle, Manager};
 
-use crate::types::DownloadFormat;
+use crate::types::{DownloadFormat, ProxyMode};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -14,6 +14,9 @@ pub struct Config {
     pub enable_file_logger: bool,
     pub download_format: DownloadFormat,
     pub dir_name_fmt: String,
+    pub proxy_host: String,
+    pub proxy_mode: ProxyMode,
+    pub proxy_port: u16,
 }
 
 impl Config {
@@ -75,6 +78,9 @@ impl Config {
             enable_file_logger: true,
             download_format: DownloadFormat::Webp,
             dir_name_fmt: "{title} - {id}".to_string(),
+            proxy_mode: ProxyMode::System,
+            proxy_host: "127.0.0.1".to_string(),
+            proxy_port: 7890,
         }
     }
 }

@@ -158,7 +158,7 @@ logEvent: "log-event"
 
 export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; dirName: string }
 export type CommandError = { err_title: string; err_message: string }
-export type Config = { downloadDir: string; exportDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirNameFmt: string }
+export type Config = { downloadDir: string; exportDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirNameFmt: string; proxyHost: string; proxyMode: ProxyMode; proxyPort: number }
 export type DownloadFormat = "Webp" | "Avif"
 export type DownloadSpeedEvent = { speed: string }
 export type DownloadTaskEvent = { event: "Create"; data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number } } | { event: "Update"; data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number } }
@@ -170,6 +170,7 @@ export type JsonValue = null | boolean | number | string | JsonValue[] | { [key 
 export type Language = { galleryid: number; language_localname: string; name: string }
 export type LogEvent = { timestamp: string; level: LogLevel; fields: { [key in string]: JsonValue }; target: string; filename: string; line_number: number }
 export type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR"
+export type ProxyMode = "System" | "NoProxy" | "Custom"
 export type SearchResult = { comics: Comic[]; currentPage: number; totalPage: number; ids: number[] }
 export type Suggestion = { s: string; t: number; u: string; n: string }
 export type Tag = { tag: string; female: number; male: number }
