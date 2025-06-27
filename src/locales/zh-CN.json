@@ -43,6 +43,27 @@
     "source_code_repository": "开源地址",
     "feedback": "问题反馈"
   },
+  "settings_dialog": {
+    "name": "配置",
+    "download_format": "下载格式",
+    "avif_warning": "无法导出为pdf",
+    "proxy_mode": "代理模式",
+    "system_proxy": "系统代理",
+    "no_proxy": "直连",
+    "custom_proxy": "自定义",
+    "open_config_directory": "打开配置目录",
+    "directory_format": {
+      "name": "文件夹格式",
+      "available_fields": "可用字段",
+      "id": "漫画ID",
+      "title": "漫画标题",
+      "artists": "作者",
+      "language": "语言名(例如english, chinese)",
+      "language_localname": "本地化语言名(例如English, 中文)",
+      "example": "例如",
+      "directory_result": "下载漫画2829145的结果"
+    }
+  },
   "search_pane": {
     "name": "漫画搜索",
     "search_by_query": "关键词",

@@ -6,7 +6,8 @@ import UncompletedProgresses from '../components/UncompletedProgresses.vue'
 import CompletedProgresses from '../components/CompletedProgresses.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { FolderOpenOutline } from '@vicons/ionicons5'
+import { FolderOpenOutline, SettingsOutline } from '@vicons/ionicons5'
+import SettingsDialog from '../components/SettingsDialog.vue'
 
 const { t } = useI18n()
 
@@ -17,6 +18,7 @@ defineProps<{
 }>()
 
 const downloadSpeed = ref<string>('')
+const settingsDialogShowing = ref<boolean>(false)
 
 onMounted(async () => {
   await events.downloadSpeedEvent.listen(async ({ payload: { speed } }) => {
@@ -125,6 +127,14 @@ async function showDownloadDirInFileManager() {
           </template>
         </n-button>
       </n-input-group>
+      <n-button @click="settingsDialogShowing = true" size="small">
+        <template #icon>
+          <n-icon>
+            <SettingsOutline />
+          </n-icon>
+        </template>
+        {{ t('settings_dialog.name') }}
+      </n-button>
     </div>
 
     <n-tabs class="h-full overflow-auto" type="line" size="small" animated>
@@ -137,6 +147,8 @@ async function showDownloadDirInFileManager() {
     </n-tabs>
 
     <span class="ml-auto mr-2 mb-2">{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
+
+    <settings-dialog v-model:showing="settingsDialogShowing" />
   </div>
 </template>
 
