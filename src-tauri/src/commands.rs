@@ -323,3 +323,14 @@ pub async fn get_cover_data(
         .map_err(|err| CommandError::from("Failed to get cover", err))?;
     Ok(cover_data.to_vec())
 }
+
+#[allow(clippy::needless_pass_by_value)]
+#[tauri::command(async)]
+#[specta::specta]
+pub fn get_synced_comic(app: AppHandle, mut comic: Comic) -> CommandResult<Comic> {
+    comic
+        .update_fields(&app)
+        .map_err(|err| CommandError::from(&format!("`{}`更新Comic的字段失败", comic.title), err))?;
+
+    Ok(comic)
+}

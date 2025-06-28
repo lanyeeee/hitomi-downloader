@@ -46,6 +46,7 @@ pub fn run() {
             get_logs_dir_size,
             show_path_in_file_manager,
             get_cover_data,
+            get_synced_comic,
         ])
         .events(tauri_specta::collect_events![
             LogEvent,

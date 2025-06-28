@@ -8,6 +8,7 @@ import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
 import { FolderOpenOutline, SettingsOutline } from '@vicons/ionicons5'
 import SettingsDialog from '../components/SettingsDialog.vue'
+import { ProgressData } from '../types.ts'
 
 const { t } = useI18n()
 
@@ -25,7 +26,7 @@ onMounted(async () => {
     downloadSpeed.value = speed
   })
 
-  await events.downloadTaskEvent.listen(({ payload: { event, data } }) => {
+  await events.downloadTaskEvent.listen(async ({ payload: { event, data } }) => {
     if (event === 'Create') {
       const { comic } = data
 
@@ -49,16 +50,8 @@ onMounted(async () => {
       if (state === 'Completed') {
         progressData.comic.isDownloaded = true
 
-        if (store.pickedComic !== undefined) {
-          store.pickedComic.isDownloaded = true
-        }
-
-        if (store.searchResult !== undefined) {
-          const comic = store.searchResult.comics.find((comic) => comic.id === comicId)
-          if (comic !== undefined) {
-            comic.isDownloaded = true
-          }
-        }
+        await syncPickedComic()
+        await syncComicInSearch(progressData)
       }
 
       progressData.percentage = (downloadedImgCount / totalImgCount) * 100
@@ -85,6 +78,34 @@ onMounted(async () => {
     }
   })
 })
+
+async function syncPickedComic() {
+  if (store.pickedComic === undefined) {
+    return
+  }
+  const result = await commands.getSyncedComic(store.pickedComic)
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
+  store.pickedComic = result.data
+}
+
+async function syncComicInSearch(progressData: ProgressData) {
+  if (store.searchResult === undefined) {
+    return
+  }
+  const comic = store.searchResult.comics.find((comic) => comic.id === progressData.comic.id)
+  if (comic === undefined) {
+    return
+  }
+  const result = await commands.getSyncedComic(comic)
+  if (result.status === 'error') {
+    console.error(result.error)
+    return
+  }
+  Object.assign(comic, { ...result.data })
+}
 
 // Select download directory through dialog
 async function selectDownloadDir() {
