@@ -6,7 +6,7 @@ use std::{
 use anyhow::anyhow;
 use byteorder::{BigEndian, ReadBytesExt};
 use indexmap::IndexSet;
-use regex::Regex;
+use regex_lite::Regex;
 use reqwest::{header::RANGE, StatusCode};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
