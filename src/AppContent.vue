@@ -11,9 +11,9 @@ import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
 import { ListOutline, HelpCircleOutline } from '@vicons/ionicons5'
+import { locales } from './locales'
 
-const { t } = useI18n()
-
+const { t, locale } = useI18n()
 const store = useStore()
 
 const message = useMessage()
@@ -21,6 +21,11 @@ const notification = useNotification()
 
 const logViewerShowing = ref<boolean>(false)
 const aboutDialogShowing = ref<boolean>(false)
+
+const localeOptions = Object.entries(locales).map(([key, value]) => ({
+  label: value.name,
+  value: key,
+}))
 
 const searchPaneRef = ref<InstanceType<typeof SearchPane>>()
 
@@ -115,6 +120,7 @@ onMounted(async () => {
             </template>
             {{ t('about_dialog.name') }}
           </n-button>
+          <n-select v-model:value="locale" :options="localeOptions" class="ml-auto w-1/3" />
         </div>
         <downloading-pane
           class="flex-1 overflow-auto"
