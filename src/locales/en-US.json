@@ -1,0 +1,115 @@
+{
+  "name": "English(US)",
+  "common": {
+    "artist": "Artist",
+    "group": "Group",
+    "series": "Series",
+    "character": "Character",
+    "type": "Type",
+    "language": "Language",
+    "tag": "Tag",
+    "open_directory": "Open Folder",
+    "export_pdf": "Export PDF",
+    "export_cbz": "Export CBZ",
+    "download_directory": "DL Folder",
+    "export_directory": "Export Folder",
+    "select_all": "Select All",
+    "continue": "Continue",
+    "pause": "Pause",
+    "cancel": "Cancel"
+  },
+  "app_content": {
+    "save_config_success": "Config saved",
+    "logs_directory_size_too_big": "Log folder exceeds 50MB",
+    "log_cleanup_reminder": "Please clean up log files soon",
+    "click_top_center": "Click the top-center",
+    "there_is": "There is",
+    "you_can_also_uncheck": "You can uncheck",
+    "this_will_disable_file_logging": "This will stop file logging"
+  },
+  "log_viewer": {
+    "name": "Log",
+    "logs_directory_size": "Log folder size",
+    "search_placeholder": "Search logs...",
+    "open_logs_directory": "Open Log Folder",
+    "enable_file_logging": "Enable File Logging",
+    "clear_log_viewer": "Clear Log Viewer"
+  },
+  "about_dialog": {
+    "name": "About",
+    "support_message": "Enjoying this project? feel free to support it with a {github} Star⭐!",
+    "motivation_message": "Your support motivates me to keep updating and maintaining🙏",
+    "software_version": "Version",
+    "source_code_repository": "Source Code",
+    "feedback": "Feedback"
+  },
+  "settings_dialog": {
+    "name": "Settings",
+    "download_format": "Download Format",
+    "avif_warning": "Can not export to PDF",
+    "proxy_mode": "Proxy Mode",
+    "system_proxy": "System",
+    "no_proxy": "No Proxy",
+    "custom_proxy": "Custom",
+    "open_config_directory": "Open Config Folder",
+    "directory_format": {
+      "name": "Folder Format",
+      "available_fields": "Available Fields",
+      "id": "Comic ID",
+      "title": "Comic Title",
+      "artists": "Comic Authors",
+      "language": "Language Name",
+      "language_localname": "Localized Language Name",
+      "example": "Example",
+      "directory_result": "Result of download comic 2829145"
+    }
+  },
+  "search_pane": {
+    "name": "Search",
+    "search_by_query": "Keywords",
+    "search_by_id": "Comic ID (Link also works)",
+    "searching": "Searching...",
+    "searching_warning": "Search is processing, please try again later",
+    "search_success": "Search done",
+    "comic_id_invalid": "Invalid Comic ID format",
+    "enter_comic_id_or_url": "Please enter Comic ID or URL"
+  },
+  "downloaded_pane": {
+    "name": "Local",
+    "empty_description": "Please download comics first",
+    "pdf_exporting": "Exporting PDF",
+    "pdf_export_error": "PDF export failed",
+    "pdf_exported": "PDF exported",
+    "cbz_exporting": "Exporting CBZ",
+    "cbz_export_error": "CBZ export failed",
+    "cbz_exported": "CBZ exported"
+  },
+  "comic_pane": {
+    "name": "Comic",
+    "other_language": "Other Languages",
+    "empty_description": "Please select a comic (@:search_pane.name @:downloaded_pane.name)",
+    "related": "Related Comics"
+  },
+  "downloading_pane": {
+    "name": "Downloads",
+    "pending": "Pending",
+    "downloading": "Downloading",
+    "paused": "Paused",
+    "cancelled": "Cancelled",
+    "completed": "Completed",
+    "failed": "Failed",
+    "download_speed": "Download Speed"
+  },
+  "uncompleted_progresses": {
+    "name": "Downloading",
+    "usage_tips": "Drag with left mouse button to select, right click for menu, double click to pause/continue"
+  },
+  "completed_progresses": {
+    "name": "Completed"
+  },
+  "download_button": {
+    "quick_download": "Download",
+    "resume_download": "Resume",
+    "download_again": "Re-download"
+  }
+}
