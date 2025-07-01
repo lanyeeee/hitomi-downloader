@@ -54,14 +54,15 @@
     "open_config_directory": "Open Config Folder",
     "directory_format": {
       "name": "Folder Format",
+      "directory_level_tips": "Use the forward slash {slash} to separate directory levels",
       "available_fields": "Available Fields",
       "id": "Comic ID",
       "title": "Comic Title",
       "artists": "Comic Authors",
       "language": "Language Name",
       "language_localname": "Localized Language Name",
-      "example": "Example",
-      "directory_result": "Result of download comic 2829145"
+      "for_example": "For example",
+      "directory_result": "Download comic 2829145 will create 2 nested folders:"
     }
   },
   "search_pane": {

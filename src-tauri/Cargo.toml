@@ -53,6 +53,7 @@ lopdf = { git = "https://github.com/lanyeeee/lopdf", features = ["embed_image_we
 uuid = { version = "1.16.0", features = ["v4"] }
 image = { version = "0.25.6", features = ["webp"], default-features = false }
 zip = { version = "4.0.0", default-features = false }
+walkdir = { version = "2.5.0" }
 
 [profile.release]
 strip = true

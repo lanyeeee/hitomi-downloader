@@ -13,7 +13,7 @@ const store = useStore()
 const showing = defineModel<boolean>('showing', { required: true })
 
 const proxyHost = ref<string>(store.config?.proxyHost ?? '')
-const dirNameFmt = ref<string>(store.config?.dirNameFmt ?? '')
+const dirFmt = ref<string>(store.config?.dirFmt ?? '')
 
 const disableProxyHostAndPort = computed(() => store.config?.proxyMode !== 'Custom')
 
@@ -64,10 +64,13 @@ async function showConfigInFileManager() {
             placeholder=""
             :parse="(x: string) => parseInt(x)" />
         </n-input-group>
-        <n-tooltip placement="top" trigger="hover">
-          <div class="font-semibold">
-            <span>{{ t('settings_dialog.directory_format.available_fields') }}</span>
-          </div>
+        <n-tooltip placement="top" trigger="hover" width="450">
+          <i18n-t keypath="settings_dialog.directory_format.directory_level_tips" tag="div" scope="global">
+            <template v-slot:slash>
+              <span class="rounded bg-gray-500 px-1 text-white">/</span>
+            </template>
+          </i18n-t>
+          <div class="font-semibold mt-2">{{ t('settings_dialog.directory_format.available_fields') }}</div>
           <div>
             <div>
               <span class="rounded bg-gray-500 px-1">id</span>
@@ -90,20 +93,23 @@ async function showConfigInFileManager() {
               <span class="ml-2">{{ t('settings_dialog.directory_format.language_localname') }}</span>
             </div>
           </div>
-          <div class="font-semibold mt-2">{{ t('settings_dialog.directory_format.example') }}</div>
+          <div class="font-semibold mt-2">{{ t('settings_dialog.directory_format.for_example') }}</div>
           <div class="bg-gray-200 rounded-md p-1 text-black">
-            [{artists}] - {title}({id}) - {language}({language_localname})
+            {artists}/[{artists}] {title}({id}) - {language}({language_localname})
           </div>
           <div class="font-semibold">{{ t('settings_dialog.directory_format.directory_result') }}</div>
-          <div class="bg-gray-200 rounded-md p-1 text-black">[mameroku] - Soushi Souai.(2829145) - chinese(中文)</div>
+          <div class="flex flex-col gap-1 text-black">
+            <div class="bg-gray-200 rounded-md px-2 w-fit">mameroku</div>
+            <div class="bg-gray-200 rounded-md px-2 w-fit">[mameroku] Soushi Souai.(2829145) - chinese(中文)</div>
+          </div>
           <template #trigger>
             <n-input-group class="box-border">
               <n-input-group-label size="small">{{ t('settings_dialog.directory_format.name') }}</n-input-group-label>
               <n-input
-                v-model:value="dirNameFmt"
+                v-model:value="dirFmt"
                 size="small"
-                @blur="store.config.dirNameFmt = dirNameFmt"
-                @keydown.enter="store.config.dirNameFmt = dirNameFmt" />
+                @blur="store.config.dirFmt = dirFmt"
+                @keydown.enter="store.config.dirFmt = dirFmt" />
             </n-input-group>
           </template>
         </n-tooltip>

@@ -75,13 +75,8 @@ async cancelDownloadTask(id: number) : Promise<Result<null, CommandError>> {
     else return { status: "error", error: e  as any };
 }
 },
-async getDownloadedComics() : Promise<Result<Comic[], CommandError>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("get_downloaded_comics") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
+async getDownloadedComics() : Promise<Comic[]> {
+    return await TAURI_INVOKE("get_downloaded_comics");
 },
 async exportPdf(comic: Comic) : Promise<Result<null, CommandError>> {
     try {
@@ -164,9 +159,9 @@ logEvent: "log-event"
 
 /** user-defined types **/
 
-export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; dirName: string }
+export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; comicDownloadDir?: string | null }
 export type CommandError = { err_title: string; err_message: string }
-export type Config = { downloadDir: string; exportDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirNameFmt: string; proxyHost: string; proxyMode: ProxyMode; proxyPort: number }
+export type Config = { downloadDir: string; exportDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirFmt: string; proxyHost: string; proxyMode: ProxyMode; proxyPort: number }
 export type DownloadFormat = "Webp" | "Avif"
 export type DownloadSpeedEvent = { speed: string }
 export type DownloadTaskEvent = { event: "Create"; data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number } } | { event: "Update"; data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number } }

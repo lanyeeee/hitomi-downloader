@@ -335,7 +335,19 @@ impl DownloadTask {
         let id = self.comic.id;
         let comic_title = &self.comic.title;
 
-        let temp_download_dir = self.comic.get_temp_download_dir(&self.app);
+        let temp_download_dir = match self.comic.get_temp_download_dir() {
+            Ok(temp_download_dir) => temp_download_dir,
+            Err(err) => {
+                let err_title = format!("Failed to get temp download directory of `{comic_title}`");
+                let string_chain = err.to_string_chain();
+                tracing::error!(err_title, message = string_chain);
+
+                self.set_state(DownloadTaskState::Failed);
+                self.emit_download_task_update_event();
+
+                return None;
+            }
+        };
 
         if let Err(err) = std::fs::create_dir_all(&temp_download_dir).map_err(anyhow::Error::from) {
             let err_title = format!(
@@ -349,7 +361,7 @@ impl DownloadTask {
             self.emit_download_task_update_event();
 
             return None;
-        };
+        }
 
         tracing::trace!(
             id,
@@ -461,7 +473,7 @@ impl DownloadTask {
                 tracing::debug!(id, comic_title, "Comic is paused");
                 if let Some(permit) = permit.take() {
                     drop(permit);
-                };
+                }
                 ControlFlow::Continue(())
             }
             DownloadTaskState::Cancelled => {
@@ -504,10 +516,10 @@ impl DownloadTask {
     #[allow(clippy::needless_pass_by_value)]
     pub fn save_metadata(&self, download_dir: &Path) -> anyhow::Result<()> {
         let mut comic = self.comic.as_ref().clone();
-        // Set the `is_downloaded` field of all comics to `None`, so that the `is_downloaded` field is ignored during serialization
+        // Set the `is_downloaded` and `comic_download_dir` field to `None`
+        // so that the `is_downloaded` and `comic_download_dir` field is ignored during serialization
         comic.is_downloaded = None;
-        // Set the `dir_name` field of all comics to empty, so that the `dir_name` field is ignored during serialization
-        comic.dir_name = String::new();
+        comic.comic_download_dir = None;
 
         let comic_title = &comic.title;
         let comic_json = serde_json::to_string_pretty(&comic).context(format!(
@@ -529,7 +541,11 @@ impl DownloadTask {
         let id = self.comic.id;
         let comic_title = &self.comic.title;
 
-        let download_dir = self.comic.get_download_dir(&self.app);
+        let download_dir = self
+            .comic
+            .comic_download_dir
+            .clone()
+            .context("`comic_download_dir` is None")?;
 
         if download_dir.exists() {
             std::fs::remove_dir_all(&download_dir).context(format!(
@@ -720,7 +736,7 @@ impl DownloadImgTask {
                 tracing::trace!(id, comic_title, url, "Image is paused");
                 if let Some(permit) = permit.take() {
                     drop(permit);
-                };
+                }
                 ControlFlow::Continue(())
             }
             DownloadTaskState::Cancelled => {
@@ -736,8 +752,9 @@ impl DownloadImgTask {
     }
 }
 
+// TODO: add type_field for `doujinshi` `manga` `imageset`...
 #[derive(Default, Debug, PartialEq, Clone, Serialize, Deserialize, Type)]
-pub struct DirNameFmtParams {
+pub struct DirFmtParams {
     id: i32,
     title: String,
     language: String,
@@ -746,38 +763,37 @@ pub struct DirNameFmtParams {
 }
 
 impl Comic {
-    /// Update the `dir_name` fields based on the fmt
+    /// Update the `comic_download_dir` fields based on the fmt
     fn update_dir_name_fields_by_fmt(&mut self, app: &AppHandle) -> anyhow::Result<()> {
         let comic_title = &self.title;
 
-        let fmt_params = DirNameFmtParams {
+        let fmt_params = DirFmtParams {
             id: self.id,
             title: self.title.clone(),
             language: self.language.clone(),
             language_localname: self.language_localname.clone(),
             artists: self.artists.join(", "),
         };
-        self.dir_name = Comic::get_dir_name_by_fmt(app, &fmt_params).context(format!(
-            "Failed to get directory name by fmt of `{comic_title}`"
-        ))?;
+        let comic_download_dir = Comic::get_comic_download_dir_by_fmt(app, &fmt_params).context(
+            format!("Failed to get download directory by fmt of `{comic_title}`"),
+        )?;
+        self.comic_download_dir = Some(comic_download_dir);
 
         Ok(())
     }
 
-    fn get_dir_name_by_fmt(
+    fn get_comic_download_dir_by_fmt(
         app: &AppHandle,
-        fmt_params: &DirNameFmtParams,
-    ) -> anyhow::Result<String> {
+        fmt_params: &DirFmtParams,
+    ) -> anyhow::Result<PathBuf> {
         use strfmt::strfmt;
 
-        let fmt = app.state::<RwLock<Config>>().read().dir_name_fmt.clone();
-
         let json_value = serde_json::to_value(fmt_params)
-            .context("Failed to convert DirNameFmtParams to serde_json::Value")?;
+            .context("Failed to convert DirFmtParams to serde_json::Value")?;
 
         let json_map = json_value
             .as_object()
-            .context("DirNameFmtParams is not a JSON object")?;
+            .context("DirFmtParams is not a JSON object")?;
 
         let vars: HashMap<String, String> = json_map
             .into_iter()
@@ -791,9 +807,29 @@ impl Comic {
             })
             .collect();
 
-        let dir_name = strfmt(&fmt, &vars).context("Failed to format directory name")?;
-        let dir_name = filename_filter(&dir_name);
+        let (download_dir, dir_fmt) = {
+            let config = app.state::<RwLock<Config>>();
+            let config = config.read();
+            (config.download_dir.clone(), config.dir_fmt.clone())
+        };
 
-        Ok(dir_name)
+        let dir_fmt_parts: Vec<&str> = dir_fmt.split('/').collect();
+
+        let mut dir_names = Vec::new();
+        for fmt in dir_fmt_parts {
+            let dir_name = strfmt(fmt, &vars).context("Failed to format directory name")?;
+            let dir_name = filename_filter(&dir_name);
+            if !dir_name.is_empty() {
+                dir_names.push(dir_name);
+            }
+        }
+
+        // Join the formatted directory names to create the comic download directory
+        let mut comic_download_dir = download_dir;
+        for dir_name in dir_names {
+            comic_download_dir = comic_download_dir.join(dir_name);
+        }
+
+        Ok(comic_download_dir)
     }
 }

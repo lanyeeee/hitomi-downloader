@@ -54,14 +54,15 @@
     "open_config_directory": "打开配置目录",
     "directory_format": {
       "name": "文件夹格式",
+      "directory_level_tips": "可以用斜杠 {slash} 来划分目录层级",
       "available_fields": "可用字段",
       "id": "漫画ID",
       "title": "漫画标题",
       "artists": "作者",
       "language": "语言名(例如english, chinese)",
       "language_localname": "本地化语言名(例如English, 中文)",
-      "example": "例如",
-      "directory_result": "下载漫画2829145的结果"
+      "for_example": "例如格式",
+      "directory_result": "下载漫画2829145会产生两层文件夹，分别是"
     }
   },
   "search_pane": {

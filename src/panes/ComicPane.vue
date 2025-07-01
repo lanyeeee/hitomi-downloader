@@ -6,7 +6,6 @@ import { useI18n } from '../utils.ts'
 import DownloadButton from '../components/DownloadButton.vue'
 import { ReloadOutline } from '@vicons/ionicons5'
 import ComicCard from '../components/ComicCard.vue'
-import { path } from '@tauri-apps/api'
 
 const { t } = useI18n()
 
@@ -76,8 +75,14 @@ async function showComicDownloadDirInFileManager() {
   if (store.pickedComic === undefined || store.config === undefined) {
     return
   }
-  const comicDir = await path.join(store.config.downloadDir, store.pickedComic.dirName)
-  const result = await commands.showPathInFileManager(comicDir)
+
+  const comicDownloadDir = store.pickedComic.comicDownloadDir
+  if (comicDownloadDir === undefined || comicDownloadDir === null) {
+    console.error('Comic download directory is undefined or null')
+    return
+  }
+
+  const result = await commands.showPathInFileManager(comicDownloadDir)
   if (result.status === 'error') {
     console.error(result.error)
   }
