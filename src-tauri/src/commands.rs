@@ -1,4 +1,7 @@
-use anyhow::Context;
+use std::path::PathBuf;
+
+use anyhow::{anyhow, Context};
+use indexmap::IndexMap;
 use parking_lot::RwLock;
 use tauri::{AppHandle, State};
 use tauri_plugin_opener::OpenerExt;
@@ -255,13 +258,54 @@ pub fn get_downloaded_comics(config: State<RwLock<Config>>) -> Vec<Comic> {
 
     tracing::debug!("get downloaded comics success");
 
-    let mut comic_id_set = std::collections::HashSet::new();
+    // Group comics by their ID to facilitate deduplication
+    let mut comics_by_id: IndexMap<i32, Vec<Comic>> = IndexMap::new();
+    for comic in downloaded_comics {
+        comics_by_id.entry(comic.id).or_default().push(comic);
+    }
 
-    // TODO: When duplicates are found, an error should be reported to remind the user to handle it manually
-    downloaded_comics
-        .into_iter()
-        .filter(|comic| comic_id_set.insert(comic.id))
-        .collect()
+    let mut unique_comics = Vec::new();
+    for (_comic_id, mut comics) in comics_by_id {
+        // The download directories for all comics with the same ID, which may have multiple versions, so we need to deduplicate
+        let comic_download_dirs: Vec<&PathBuf> = comics
+            .iter()
+            .filter_map(|comic| comic.comic_download_dir.as_ref())
+            .collect();
+
+        if comic_download_dirs.is_empty() {
+            // This situation should not actually happen, because the comic metadata file should always have a download directory
+            continue;
+        }
+
+        // Choose the first one as the retained comic
+        let chosen_download_dir = comic_download_dirs[0];
+
+        if comics.len() > 1 {
+            let dir_paths_string = comic_download_dirs
+                .iter()
+                .map(|path| format!("`{}`", path.display()))
+                .collect::<Vec<String>>()
+                .join(", ");
+            // If there are duplicate comics, report an error
+            let comic_title = &comics[0].title;
+            let err_title = "An error occurred while getting downloaded comics";
+            let string_chain = anyhow!("All version paths: [{dir_paths_string}]")
+                .context(format!(
+                    "To proceed, temporarily selected only the version '{}' from the multiple versions found",
+                    chosen_download_dir.display()
+                ))
+                .context(format!(
+                    "Comic `{comic_title}` has multiple versions in the download directory. Please handle this manually, keeping only one",
+                ))
+                .to_string_chain();
+            tracing::error!(err_title, message = string_chain);
+        }
+        // Choose the first one as the retained comic
+        let chosen_comic = comics.remove(0);
+        unique_comics.push(chosen_comic);
+    }
+
+    unique_comics
 }
 
 #[tauri::command(async)]
