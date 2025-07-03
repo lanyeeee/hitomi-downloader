@@ -58,11 +58,12 @@
       "available_fields": "可用字段",
       "id": "漫画ID",
       "title": "漫画标题",
+      "type": "漫画类型(例如doujinshi, manga, imageset)",
       "artists": "作者",
       "language": "语言名(例如english, chinese)",
       "language_localname": "本地化语言名(例如English, 中文)",
       "for_example": "例如格式",
-      "directory_result": "下载漫画2829145会产生两层文件夹，分别是"
+      "directory_result": "下载漫画2829145会产生三层文件夹，分别是"
     }
   },
   "search_pane": {

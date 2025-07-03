@@ -64,7 +64,7 @@ async function showConfigInFileManager() {
             placeholder=""
             :parse="(x: string) => parseInt(x)" />
         </n-input-group>
-        <n-tooltip placement="top" trigger="hover" width="450">
+        <n-tooltip placement="top" trigger="hover" width="580">
           <i18n-t keypath="settings_dialog.directory_format.directory_level_tips" tag="div" scope="global">
             <template v-slot:slash>
               <span class="rounded bg-gray-500 px-1 text-white">/</span>
@@ -81,6 +81,10 @@ async function showConfigInFileManager() {
               <span class="ml-2">{{ t('settings_dialog.directory_format.title') }}</span>
             </div>
             <div>
+              <span class="rounded bg-gray-500 px-1">type</span>
+              <span class="ml-2">{{ t('settings_dialog.directory_format.type') }}</span>
+            </div>
+            <div>
               <span class="rounded bg-gray-500 px-1">artists</span>
               <span class="ml-2">{{ t('settings_dialog.directory_format.artists') }}</span>
             </div>
@@ -94,12 +98,15 @@ async function showConfigInFileManager() {
             </div>
           </div>
           <div class="font-semibold mt-2">{{ t('settings_dialog.directory_format.for_example') }}</div>
-          <div class="bg-gray-200 rounded-md p-1 text-black">
-            {artists}/[{artists}] {title}({id}) - {language}({language_localname})
+          <div class="bg-gray-200 rounded-md p-1 text-black w-fit">
+            {type}/{artists}/[{artists}] {title}({id}) - {language}({language_localname})
           </div>
           <div class="font-semibold">{{ t('settings_dialog.directory_format.directory_result') }}</div>
-          <div class="flex flex-col gap-1 text-black">
+          <div class="flex gap-1 text-black">
+            <div class="bg-gray-200 rounded-md px-2 w-fit">doujinshi</div>
+            <span class="rounded bg-gray-500 px-1 text-white">/</span>
             <div class="bg-gray-200 rounded-md px-2 w-fit">mameroku</div>
+            <span class="rounded bg-gray-500 px-1 text-white">/</span>
             <div class="bg-gray-200 rounded-md px-2 w-fit">[mameroku] Soushi Souai.(2829145) - chinese(中文)</div>
           </div>
           <template #trigger>

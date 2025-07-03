@@ -58,11 +58,12 @@
       "available_fields": "Available Fields",
       "id": "Comic ID",
       "title": "Comic Title",
+      "type": "Comic Type (e.g., doujinshi, manga, imageset)",
       "artists": "Comic Authors",
       "language": "Language Name",
       "language_localname": "Localized Language Name",
       "for_example": "For example",
-      "directory_result": "Download comic 2829145 will create 2 nested folders:"
+      "directory_result": "Download comic 2829145 will create 3 nested folders:"
     }
   },
   "search_pane": {

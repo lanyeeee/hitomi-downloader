@@ -752,13 +752,14 @@ impl DownloadImgTask {
     }
 }
 
-// TODO: add type_field for `doujinshi` `manga` `imageset`...
 #[derive(Default, Debug, PartialEq, Clone, Serialize, Deserialize, Type)]
 pub struct DirFmtParams {
     id: i32,
     title: String,
     language: String,
     language_localname: String,
+    #[serde(rename = "type")]
+    type_field: String,
     artists: String,
 }
 
@@ -772,6 +773,7 @@ impl Comic {
             title: self.title.clone(),
             language: self.language.clone(),
             language_localname: self.language_localname.clone(),
+            type_field: self.type_field.clone(),
             artists: self.artists.join(", "),
         };
         let comic_download_dir = Comic::get_comic_download_dir_by_fmt(app, &fmt_params).context(
