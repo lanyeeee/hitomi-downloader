@@ -4,7 +4,7 @@ import { Comic, commands } from '../bindings.ts'
 import { computed, watch, ref, nextTick } from 'vue'
 import { useI18n } from '../utils.ts'
 import DownloadButton from '../components/DownloadButton.vue'
-import { ReloadOutline } from '@vicons/ionicons5'
+import { PhArrowClockwise } from '@phosphor-icons/vue'
 import ComicCard from '../components/ComicCard.vue'
 
 const { t } = useI18n()
@@ -99,7 +99,7 @@ async function showComicDownloadDirInFileManager() {
     <div class="flex w-full">
       <img v-if="cover !== undefined" class="w-40 object-cover mr-2" :src="cover" alt="" />
       <n-icon v-else size="50" class="w-40 h-full flex items-center justify-center flex-shrink-0">
-        <ReloadOutline
+        <PhArrowClockwise
           class="cursor-pointer transition-transform duration-500 hover:rotate-360"
           @click="store.loadCover(store.pickedComic.id, store.pickedComic.coverUrl)" />
       </n-icon>

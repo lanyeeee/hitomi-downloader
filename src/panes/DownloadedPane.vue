@@ -6,7 +6,7 @@ import { open } from '@tauri-apps/plugin-dialog'
 import { useStore } from '../store.ts'
 import DownloadedComicCard from '../components/DownloadedComicCard.vue'
 import { useI18n } from '../utils.ts'
-import { FolderOpenOutline } from '@vicons/ionicons5'
+import { PhFolderOpen } from '@phosphor-icons/vue'
 
 const { t } = useI18n()
 
@@ -169,8 +169,8 @@ async function showExportDirInFileManager() {
       <n-input v-model:value="store.config.exportDir" size="small" readonly @click="selectExportDir" />
       <n-button class="w-9" size="small" @click="showExportDirInFileManager">
         <template #icon>
-          <n-icon>
-            <FolderOpenOutline />
+          <n-icon size="20">
+            <PhFolderOpen />
           </n-icon>
         </template>
       </n-button>

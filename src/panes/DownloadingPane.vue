@@ -6,7 +6,7 @@ import UncompletedProgresses from '../components/UncompletedProgresses.vue'
 import CompletedProgresses from '../components/CompletedProgresses.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { FolderOpenOutline, SettingsOutline } from '@vicons/ionicons5'
+import { PhFolderOpen, PhGearSix } from '@phosphor-icons/vue'
 import SettingsDialog from '../components/SettingsDialog.vue'
 import { ProgressData } from '../types.ts'
 
@@ -142,16 +142,16 @@ async function showDownloadDirInFileManager() {
         <n-input v-model:value="store.config.downloadDir" size="small" readonly @click="selectDownloadDir" />
         <n-button class="w-9" size="small" @click="showDownloadDirInFileManager">
           <template #icon>
-            <n-icon>
-              <FolderOpenOutline />
+            <n-icon size="20">
+              <PhFolderOpen />
             </n-icon>
           </template>
         </n-button>
       </n-input-group>
       <n-button @click="settingsDialogShowing = true" size="small">
         <template #icon>
-          <n-icon>
-            <SettingsOutline />
+          <n-icon size="20">
+            <PhGearSix />
           </n-icon>
         </template>
         {{ t('settings_dialog.name') }}

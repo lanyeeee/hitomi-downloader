@@ -10,7 +10,7 @@ import SearchPane from './panes/SearchPane.vue'
 import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
-import { ListOutline, HelpCircleOutline } from '@vicons/ionicons5'
+import { PhClockCounterClockwise, PhInfo } from '@phosphor-icons/vue'
 import { locales } from './locales'
 
 const { t, locale } = useI18n()
@@ -106,16 +106,16 @@ onMounted(async () => {
         <div class="flex gap-2 px-2 box-border items-center">
           <n-button @click="logViewerShowing = true">
             <template #icon>
-              <n-icon>
-                <ListOutline />
+              <n-icon size="22">
+                <PhClockCounterClockwise />
               </n-icon>
             </template>
             {{ t('log_viewer.name') }}
           </n-button>
           <n-button @click="aboutDialogShowing = true">
             <template #icon>
-              <n-icon>
-                <HelpCircleOutline />
+              <n-icon size="22">
+                <PhInfo />
               </n-icon>
             </template>
             {{ t('about_dialog.name') }}

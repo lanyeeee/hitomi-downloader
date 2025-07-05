@@ -3,7 +3,7 @@ import { computed, onMounted } from 'vue'
 import { Comic, commands } from '../bindings.ts'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { ReloadOutline } from '@vicons/ionicons5'
+import { PhArrowClockwise } from '@phosphor-icons/vue'
 
 const { t } = useI18n()
 
@@ -73,7 +73,7 @@ async function showComicDownloadDirInFileManager() {
         alt=""
         @click="pickComic" />
       <n-icon v-else size="50" class="w-28 h-full flex items-center justify-center flex-shrink-0">
-        <ReloadOutline
+        <PhArrowClockwise
           class="cursor-pointer transition-transform duration-500 hover:rotate-360"
           @click="store.loadCover(props.comic.id, props.comic.coverUrl)" />
       </n-icon>
