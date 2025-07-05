@@ -10,7 +10,7 @@ import SearchPane from './panes/SearchPane.vue'
 import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
-import { PhClockCounterClockwise, PhInfo } from '@phosphor-icons/vue'
+import { PhClockCounterClockwise, PhInfo, PhTranslate } from '@phosphor-icons/vue'
 import { locales } from './locales'
 
 const { t, locale } = useI18n()
@@ -120,7 +120,13 @@ onMounted(async () => {
             </template>
             {{ t('about_dialog.name') }}
           </n-button>
-          <n-select v-model:value="locale" :options="localeOptions" class="ml-auto w-1/3" />
+
+          <div class="ml-auto flex items-center">
+            <n-icon size="28">
+              <PhTranslate />
+            </n-icon>
+            <n-select class="w-30" v-model:value="locale" :options="localeOptions" />
+          </div>
         </div>
         <downloading-pane
           class="flex-1 overflow-auto"
