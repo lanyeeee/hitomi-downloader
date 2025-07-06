@@ -7,6 +7,8 @@
 
 A GUI-based multi-threaded downloader for hitomi hitomi.la
 
+English / [简体中文](./README_CN.md)
+
 ## 📥 Download
 
 Pre-compiled packages are available on the [Releases page](https://github.com/lanyeeee/hitomi-downloader/releases). Just download and use.
@@ -37,7 +39,7 @@ Pre-compiled packages are available on the [Releases page](https://github.com/la
 
 **By the way, you can export to PDF/CBZ(ZIP) in the `Local` tab.**
 
-📹 The video below demonstrates the full usage process. It's Safe For Work, so feel free to watch.
+📹 The video below demonstrates the full usage process. **It's Safe For Work, so feel free to watch.**
 
 https://github.com/user-attachments/assets/d2d0e577-c074-41ca-996f-445d52e2cce5
 
