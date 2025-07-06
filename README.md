@@ -7,7 +7,7 @@
 
 A GUI-based multi-threaded downloader for hitomi hitomi.la
 
-English / [简体中文](./README_CN.md)
+English / [简体中文](./README.zh-CN.md)
 
 ## 📥 Download
 
@@ -116,6 +116,10 @@ For other cases, feel free to submit a PR directly, for example:
 -   This tool is intended for learning, research, and communication purposes only. Users should assume all risks associated with its use.
 -   The author is not responsible for any losses, legal disputes, or other consequences resulting from the use of this tool.
 -   The author is not responsible for the user's actions while using this tool, including but not limited to actions that violate laws or the rights of any third party.
+
+## Thanks
+
+[Pupil](https://github.com/tom5079/Pupil)
 
 ## 💬 Other
 

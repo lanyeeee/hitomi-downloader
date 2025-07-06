@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Questions & Discussions
+    url: https://github.com/lanyeeee/hitomi-downloader/discussions
+    about: Use GitHub discussions for message-board style questions and discussions.
+  - name: ❓ 提问与讨论
+    url: https://github.com/lanyeeee/hitomi-downloader/discussions
+    about: 如果有一般性问题或想发起讨论，请使用 GitHub Discussions

@@ -1,0 +1,35 @@
+name: Feature Request
+description: Request to add a specific feature
+labels: [enhancement]
+title: "[Feature Request] Edit Me! Issues with unmodified title will be automatically closed"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        To help me understand your idea, please provide the following information and edit the title above.
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: Why is this feature needed? What problem does it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: desc
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you're proposing
+    validations:
+      required: true
+  - type: textarea
+    id: logic
+    attributes:
+      label: Feature Logic
+      description: How to interact, how to use, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: ref
+    attributes:
+      label: Implementation Reference
+      description: Possible ways to implement this feature, or other applications that have already implemented this feature, etc.
