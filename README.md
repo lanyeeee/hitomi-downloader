@@ -117,6 +117,10 @@ For other cases, feel free to submit a PR directly, for example:
 -   The author is not responsible for any losses, legal disputes, or other consequences resulting from the use of this tool.
 -   The author is not responsible for the user's actions while using this tool, including but not limited to actions that violate laws or the rights of any third party.
 
+## Thanks
+
+[Pupil](https://github.com/tom5079/Pupil)
+
 ## 💬 Other
 
 Any problems encountered during use or any features you would like to add, welcome to open a `issue` or `discussion`. I will do my best to address them.
