@@ -1,0 +1,81 @@
+name: Bug Report
+description: Report issues you encountered
+labels: [bug]
+title: "[Bug] Edit Me! Issues with unmodified title will be automatically closed"
+body:
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      options:
+        - label: I have tried the latest version and I can confirm that this issue still exists.
+          required: true
+        - label: I will write this issue with a collaborative spirit, providing as much detail as possible, not just an error message or a screenshot.
+          required: true
+  - type: textarea
+    id: desc
+    attributes:
+      label: Bug Description
+      description: What happened? What's the current situation? Which Comic? Can the issue be consistently reproduced?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: This is the **most important** part of the entire issue. Please refer to [this issue](https://github.com/lanyeeee/hitomi-downloader/issues/4) for an example of how to write detailed reproduction steps.
+      placeholder: Reproduction Steps are the biggest factor affecting issue processing efficiency. Without detailed reproduction steps, the issue will be difficult to locate, and developers will need to spend a lot of time communicating back and forth to pinpoint the issue
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Reproduction Steps are Crucial
+      description: Providing only an error message or a screenshot without reproduction steps makes the issue difficult to locate and, therefore, difficult to solve. Detailed reproduction steps also show respect for the maintainers' work.
+      options:
+        - label: I have referred to [this issue](https://github.com/lanyeeee/hitomi-downloader/issues/4) and have written detailed steps in the **Steps to Reproduce** section.
+          required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Please provide any relevant logs.
+      placeholder: |
+        If the logs are short, you can paste them here directly.
+        
+        If the logs are very long, please save them to a .txt file and upload it by dragging it into the text box or clicking the add files button below.
+    validations:
+      required: false
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshots or Screen Recordings
+      description: Screenshots or screen recordings that demonstrate the issue.
+      placeholder: You can drag and drop files here or click the add files button below.
+  - type: input
+    id: version
+    attributes:
+      label: Version(Check by clicking the "About" button)
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here.
+      placeholder: Any other supplementary information.
+    validations:
+      required: false
