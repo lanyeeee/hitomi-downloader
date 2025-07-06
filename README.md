@@ -7,7 +7,7 @@
 
 A GUI-based multi-threaded downloader for hitomi hitomi.la
 
-English / [简体中文](./README_CN.md)
+English / [简体中文](./README.zh-CN.md)
 
 ## 📥 Download
 
