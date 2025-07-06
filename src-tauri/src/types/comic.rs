@@ -5,6 +5,7 @@ use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri::{AppHandle, Manager};
+use walkdir::WalkDir;
 
 use crate::{
     config::Config,
@@ -35,8 +36,8 @@ pub struct Comic {
     pub cover_url: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_downloaded: Option<bool>,
-    #[serde(default, skip_serializing_if = "String::is_empty")]
-    pub dir_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub comic_download_dir: Option<PathBuf>,
 }
 
 impl Comic {
@@ -126,7 +127,7 @@ impl Comic {
             files: gallery_info.files,
             cover_url,
             is_downloaded: None,
-            dir_name: String::new(),
+            comic_download_dir: None,
         };
 
         comic.update_fields(app).context(format!(
@@ -137,7 +138,7 @@ impl Comic {
         Ok(comic)
     }
 
-    pub fn from_metadata(app: &AppHandle, metadata_path: &Path) -> anyhow::Result<Comic> {
+    pub fn from_metadata(metadata_path: &Path) -> anyhow::Result<Comic> {
         let comic_json = std::fs::read_to_string(metadata_path).context(format!(
             "Failed to convert metadata to Comic, failed to read metadata file `{}`",
             metadata_path.display()
@@ -146,19 +147,20 @@ impl Comic {
             "Failed to convert metadata to Comic, failed to deserialize `{}` to Comic",
             metadata_path.display()
         ))?;
-        // The `is_downloaded` and `dir_name` fields are not serialized in the metadata file
-        // call `update_fields` to set them
-        comic.update_fields(app).context(format!(
-            "Failed to update fields for comic `{}`",
-            comic.title
+        // The `is_downloaded` and `comic_download_dir` fields are not serialized in the metadata file
+        let parent = metadata_path.parent().context(format!(
+            "Failed to get parent directory of `{}`",
+            metadata_path.display()
         ))?;
+        comic.comic_download_dir = Some(parent.to_path_buf());
+        comic.is_downloaded = Some(true);
         Ok(comic)
     }
 
     /// Update fields based on the metadata file in the download directory
     ///
     /// Update fields and logic:
-    /// - `dir_name`: Update to the directory name where the metadata file is located by matching the current comic id
+    /// - `comic_download_dir`: Update to the directory where the metadata file is located by matching the current comic id
     /// - `is_downloaded`: Set to true if the corresponding comic metadata is found
     pub fn update_fields(&mut self, app: &AppHandle) -> anyhow::Result<()> {
         let download_dir = app.state::<RwLock<Config>>().read().download_dir.clone();
@@ -166,38 +168,35 @@ impl Comic {
             return Ok(());
         }
 
-        for entry in std::fs::read_dir(&download_dir)
-            .context(format!(
-                "Failed to read the download directory `{}`",
-                download_dir.display()
-            ))?
+        for entry in WalkDir::new(&download_dir)
+            .into_iter()
             .filter_map(Result::ok)
         {
-            let metadata_path = entry.path().join("metadata.json");
-            if !metadata_path.exists() {
+            let path = entry.path();
+            if path.is_dir() {
                 continue;
             }
-
-            let metadata_str = std::fs::read_to_string(&metadata_path)
-                .context(format!("Failed to read `{}`", metadata_path.display()))?;
+            if entry.file_name() != "metadata.json" {
+                continue;
+            }
+            // now the entry is the metadata.json file
+            let metadata_str = std::fs::read_to_string(path)
+                .context(format!("Failed to read `{}`", path.display()))?;
 
             let comic_json: serde_json::Value =
                 serde_json::from_str(&metadata_str).context(format!(
                     "Failed to deserialize `{}` to serde_json::Value",
-                    metadata_path.display()
+                    path.display()
                 ))?;
 
             let id = comic_json
                 .get("id")
                 .and_then(|id| id.as_number())
-                .context(format!(
-                    "`id` field not found in `{}`",
-                    metadata_path.display()
-                ))?
+                .context(format!("`id` field not found in `{}`", path.display()))?
                 .as_i64()
                 .context(format!(
                     "`id` field in `{}` is not an integer",
-                    metadata_path.display()
+                    path.display()
                 ))?;
             #[allow(clippy::cast_possible_truncation)]
             let id = id as i32;
@@ -206,7 +205,12 @@ impl Comic {
                 continue;
             }
 
-            self.dir_name = entry.file_name().to_string_lossy().to_string();
+            let parent = path.parent().context(format!(
+                "Failed to get parent directory of `{}`",
+                path.display()
+            ))?;
+
+            self.comic_download_dir = Some(parent.to_path_buf());
             self.is_downloaded = Some(true);
             break;
         }
@@ -214,27 +218,65 @@ impl Comic {
         Ok(())
     }
 
-    pub fn get_download_dir(&self, app: &AppHandle) -> PathBuf {
-        app.state::<RwLock<Config>>()
-            .read()
-            .download_dir
-            .join(&self.dir_name)
+    pub fn get_comic_download_dir_name(&self) -> anyhow::Result<String> {
+        let comic_download_dir = self
+            .comic_download_dir
+            .as_ref()
+            .context("`comic_download_dir` field is `None`")?;
+
+        let comic_download_dir_name = comic_download_dir
+            .file_name()
+            .context(format!(
+                "Failed to get directory name of `{}`",
+                comic_download_dir.display()
+            ))?
+            .to_string_lossy()
+            .to_string();
+
+        Ok(comic_download_dir_name)
     }
 
-    pub fn get_export_dir(&self, app: &AppHandle) -> PathBuf {
-        app.state::<RwLock<Config>>()
-            .read()
-            .export_dir
-            .join(&self.dir_name)
+    pub fn get_comic_export_dir(&self, app: &AppHandle) -> anyhow::Result<PathBuf> {
+        let (download_dir, export_dir) = {
+            let config = app.state::<RwLock<Config>>();
+            let config = config.read();
+            (config.download_dir.clone(), config.export_dir.clone())
+        };
+
+        let comic_download_dir = self
+            .comic_download_dir
+            .as_ref()
+            .context("`comic_download_dir` field is `None`")?;
+
+        let relative_dir = comic_download_dir
+            .strip_prefix(&download_dir)
+            .context(format!(
+                "Failed to strip prefix `{}` from `{}`",
+                comic_download_dir.display(),
+                download_dir.display()
+            ))?;
+
+        let comic_export_dir = export_dir.join(relative_dir);
+        Ok(comic_export_dir)
     }
 
-    pub fn get_temp_download_dir(&self, app: &AppHandle) -> PathBuf {
-        let dir_name = &self.dir_name;
+    pub fn get_temp_download_dir(&self) -> anyhow::Result<PathBuf> {
+        let comic_download_dir = self
+            .comic_download_dir
+            .as_ref()
+            .context("`comic_download_dir` field is `None`")?;
 
-        app.state::<RwLock<Config>>()
-            .read()
-            .download_dir
-            .join(format!(".downloading-{dir_name}"))
+        let comic_download_dir_name = self
+            .get_comic_download_dir_name()
+            .context("Failed to get comic download directory name")?;
+
+        let parent = comic_download_dir.parent().context(format!(
+            "Failed to get parent directory of `{}`",
+            comic_download_dir.display()
+        ))?;
+
+        let temp_download_dir = parent.join(format!(".downloading-{comic_download_dir_name}"));
+        Ok(temp_download_dir)
     }
 }
 

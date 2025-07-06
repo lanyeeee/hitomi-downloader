@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Context};
-use regex::Regex;
+use regex_lite::Regex;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 

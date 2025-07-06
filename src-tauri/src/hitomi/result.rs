@@ -1,6 +1,6 @@
 use futures::future::join_all;
 use indexmap::IndexSet;
-use regex::Regex;
+use regex_lite::Regex;
 
 use super::{get_gallery_ids_for_query, get_gallery_ids_from_nozomi};
 

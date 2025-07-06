@@ -9,8 +9,8 @@ export type SupportedLocales = keyof typeof locales
 export type MessageSchema = (typeof locales)['zh-CN']
 
 export const i18n = createI18n<[MessageSchema], SupportedLocales>({
-  locale: 'zh-CN',
-  fallbackLocale: 'zh-CN',
+  locale: navigator.language in locales ? navigator.language : 'en-US',
+  fallbackLocale: 'en-US',
   globalInjection: true,
   legacy: false,
   messages: locales,

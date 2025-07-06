@@ -1,9 +1,11 @@
-use std::{path::PathBuf, time::SystemTime};
+use std::path::PathBuf;
 
-use anyhow::Context;
+use anyhow::{anyhow, Context};
+use indexmap::IndexMap;
 use parking_lot::RwLock;
 use tauri::{AppHandle, State};
 use tauri_plugin_opener::OpenerExt;
+use walkdir::WalkDir;
 
 use crate::{
     config::Config,
@@ -186,56 +188,124 @@ pub fn cancel_download_task(
 #[tauri::command(async)]
 #[specta::specta]
 #[allow(clippy::needless_pass_by_value)]
-pub fn get_downloaded_comics(
-    app: AppHandle,
-    config: State<RwLock<Config>>,
-) -> CommandResult<Vec<Comic>> {
+pub fn get_downloaded_comics(config: State<RwLock<Config>>) -> Vec<Comic> {
     let download_dir = config.read().download_dir.clone();
     // Traverse the download directory to get the path and modification time of all metadata files
-    let entries = std::fs::read_dir(&download_dir);
-    let mut metadata_path_with_modify_time: Vec<(PathBuf, SystemTime)> = entries
-        .map_err(|err| {
-            let err_title = format!(
-                "Failed to get downloaded comics, failed to read download directory {}",
-                download_dir.display()
-            );
-            CommandError::from(&err_title, err)
-        })?
+    let mut metadata_path_with_modify_time = Vec::new();
+    for entry in WalkDir::new(&download_dir)
+        .into_iter()
         .filter_map(Result::ok)
-        .filter_map(|entry| {
-            let filename = entry.file_name();
-            if filename.to_string_lossy().starts_with(".downloading-") {
-                return None;
+    {
+        let path = entry.path();
+        if path.is_dir() {
+            continue;
+        }
+        if entry.file_name() != "metadata.json" {
+            continue;
+        }
+        // now the entry is the metadata.json file
+        let metadata = match path
+            .metadata()
+            .map_err(anyhow::Error::from)
+            .context(format!(
+                "Failed to get file metadata of `{}`",
+                path.display()
+            )) {
+            Ok(metadata) => metadata,
+            Err(err) => {
+                let err_title = "An error occurred while getting downloaded comics, skipped";
+                let string_chain = err.to_string_chain();
+                tracing::error!(err_title, message = string_chain);
+                continue;
             }
-            let metadata_path = entry.path().join("metadata.json");
-            if !metadata_path.exists() {
-                return None;
+        };
+
+        let modify_time = match metadata
+            .modified()
+            .map_err(anyhow::Error::from)
+            .context(format!(
+                "Failed to get file modification time of `{}`",
+                path.display()
+            )) {
+            Ok(modify_time) => modify_time,
+            Err(err) => {
+                let err_title = "An error occurred while getting downloaded comics, skipped";
+                let string_chain = err.to_string_chain();
+                tracing::error!(err_title, message = string_chain);
+                continue;
             }
-            let modify_time = metadata_path.metadata().ok()?.modified().ok()?;
-            Some((metadata_path, modify_time))
-        })
-        .collect();
+        };
+
+        metadata_path_with_modify_time.push((path.to_path_buf(), modify_time));
+    }
     // Sort by file modification time, with the newest at the front
     metadata_path_with_modify_time.sort_by(|(_, a), (_, b)| b.cmp(a));
-    // Read Comic from metadata file
-    let downloaded_comics: Vec<Comic> = metadata_path_with_modify_time
-        .iter()
-        .filter_map(|(metadata_path, _)| {
-            match Comic::from_metadata(&app, metadata_path).map_err(anyhow::Error::from) {
-                Ok(comic) => Some(comic),
-                Err(err) => {
-                    let err_title =
-                        format!("Failed to read metadata file `{}`", metadata_path.display());
-                    let string_chain = err.to_string_chain();
-                    tracing::error!(err_title, message = string_chain);
-                    None
-                }
+    // Create Comic from metadata file
+    let mut downloaded_comics = Vec::new();
+    for (metadata_path, _) in metadata_path_with_modify_time {
+        match Comic::from_metadata(&metadata_path).context(format!(
+            "Failed to create Comic from metadata `{}`",
+            metadata_path.display()
+        )) {
+            Ok(comic) => downloaded_comics.push(comic),
+            Err(err) => {
+                let err_title = "An error occurred while getting downloaded comics, skipped";
+                let string_chain = err.to_string_chain();
+                tracing::error!(err_title, message = string_chain);
             }
-        })
-        .collect();
+        }
+    }
 
     tracing::debug!("get downloaded comics success");
-    Ok(downloaded_comics)
+
+    // Group comics by their ID to facilitate deduplication
+    let mut comics_by_id: IndexMap<i32, Vec<Comic>> = IndexMap::new();
+    for comic in downloaded_comics {
+        comics_by_id.entry(comic.id).or_default().push(comic);
+    }
+
+    let mut unique_comics = Vec::new();
+    for (_comic_id, mut comics) in comics_by_id {
+        // The download directories for all comics with the same ID, which may have multiple versions, so we need to deduplicate
+        let comic_download_dirs: Vec<&PathBuf> = comics
+            .iter()
+            .filter_map(|comic| comic.comic_download_dir.as_ref())
+            .collect();
+
+        if comic_download_dirs.is_empty() {
+            // This situation should not actually happen, because the comic metadata file should always have a download directory
+            continue;
+        }
+
+        // Choose the first one as the retained comic
+        let chosen_download_dir = comic_download_dirs[0];
+
+        if comics.len() > 1 {
+            let dir_paths_string = comic_download_dirs
+                .iter()
+                .map(|path| format!("`{}`", path.display()))
+                .collect::<Vec<String>>()
+                .join(", ");
+            // If there are duplicate comics, report an error
+            let comic_title = &comics[0].title;
+            let err_title = "An error occurred while getting downloaded comics";
+            let string_chain = anyhow!("All version paths: [{dir_paths_string}]")
+                .context(format!(
+                    "To proceed, temporarily selected only the version '{}' from the multiple versions found",
+                    chosen_download_dir.display()
+                ))
+                .context(format!(
+                    "Comic `{comic_title}` has multiple versions in the download directory. Please handle this manually, keeping only one",
+                ))
+                .to_string_chain();
+            tracing::error!(err_title, message = string_chain);
+        }
+        // Choose the first one as the retained comic
+        let chosen_comic = comics.remove(0);
+        unique_comics.push(chosen_comic);
+    }
+
+    unique_comics
 }
 
 #[tauri::command(async)]
@@ -328,9 +398,10 @@ pub async fn get_cover_data(
 #[tauri::command(async)]
 #[specta::specta]
 pub fn get_synced_comic(app: AppHandle, mut comic: Comic) -> CommandResult<Comic> {
-    comic
-        .update_fields(&app)
-        .map_err(|err| CommandError::from(&format!("`{}`更新Comic的字段失败", comic.title), err))?;
+    comic.update_fields(&app).map_err(|err| {
+        let err_title = format!("Failed to update fields for comic `{}`", comic.title);
+        CommandError::from(&err_title, err)
+    })?;
 
     Ok(comic)
 }

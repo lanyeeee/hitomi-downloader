@@ -5,15 +5,17 @@ import { SelectionArea, SelectionEvent } from '@viselect/vue'
 import { commands, DownloadTaskState } from '../bindings.ts'
 import { DropdownOption, NIcon } from 'naive-ui'
 import { useStore } from '../store.ts'
+
 import {
-  PauseOutline,
-  CheckmarkDoneOutline,
-  TrashOutline,
-  ChevronForwardOutline,
-  CloudDownloadOutline,
-  TimeOutline,
-  AlertCircleOutline,
-} from '@vicons/ionicons5'
+  PhPause,
+  PhChecks,
+  PhTrash,
+  PhCaretRight,
+  PhCloudArrowDown,
+  PhClock,
+  PhWarningCircle,
+} from '@phosphor-icons/vue'
+
 import { useI18n } from '../utils.ts'
 
 const { t } = useI18n()
@@ -91,8 +93,8 @@ function useDropdown() {
       label: t('common.select_all'),
       key: 'select-all',
       icon: () => (
-        <n-icon>
-          <CheckmarkDoneOutline />
+        <n-icon size="20">
+          <PhChecks />
         </n-icon>
       ),
       props: {
@@ -113,8 +115,8 @@ function useDropdown() {
       label: t('common.continue'),
       key: 'resume',
       icon: () => (
-        <n-icon>
-          <ChevronForwardOutline />
+        <n-icon size="20">
+          <PhCaretRight />
         </n-icon>
       ),
       props: {
@@ -133,8 +135,8 @@ function useDropdown() {
       label: t('common.pause'),
       key: 'pause',
       icon: () => (
-        <n-icon>
-          <PauseOutline />
+        <n-icon size="20">
+          <PhPause />
         </n-icon>
       ),
       props: {
@@ -153,8 +155,8 @@ function useDropdown() {
       label: t('common.cancel'),
       key: 'cancel',
       icon: () => (
-        <n-icon>
-          <TrashOutline />
+        <n-icon size="20">
+          <PhTrash />
         </n-icon>
       ),
       props: {
@@ -244,11 +246,11 @@ function stateToColorClass(state: DownloadTaskState) {
           <div class="text-ellipsis whitespace-nowrap overflow-hidden">{{ comic.title }}</div>
         </div>
         <div class="flex items-center" :title="comic.title">
-          <n-icon :class="[stateToColorClass(state), 'mr-2']" :size="20">
-            <CloudDownloadOutline v-if="state === 'Downloading'" />
-            <TimeOutline v-else-if="state === 'Pending'" />
-            <PauseOutline v-else-if="state === 'Paused'" />
-            <AlertCircleOutline v-else-if="state === 'Failed'" />
+          <n-icon :class="[stateToColorClass(state), 'mr-2']" :size="22">
+            <PhCloudArrowDown v-if="state === 'Downloading'" />
+            <PhClock v-else-if="state === 'Pending'" />
+            <PhPause v-else-if="state === 'Paused'" />
+            <PhWarningCircle v-else-if="state === 'Failed'" />
           </n-icon>
           <n-progress
             :class="stateToColorClass(state)"

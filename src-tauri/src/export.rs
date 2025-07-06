@@ -75,8 +75,13 @@ pub fn cbz(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
         success: false,
     };
 
-    let download_dir = comic.get_download_dir(app);
-    let export_dir = comic.get_export_dir(app);
+    let download_dir = comic
+        .comic_download_dir
+        .as_ref()
+        .context("`comic_download_dir` field is `None`")?;
+    let export_dir = comic
+        .get_comic_export_dir(app)
+        .context("Failed to get comic export directory")?;
     // Generate ComicInfo
     let comic_info = ComicInfo::from(comic.clone());
     // Serialize ComicInfo to xml
@@ -91,8 +96,10 @@ pub fn cbz(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
     ))?;
     // Create cbz file
     let extension = Archive::Cbz.extension();
-    let dir_name = &comic.dir_name;
-    let zip_path = export_dir.join(format!("{dir_name}.{extension}"));
+    let download_dir_name = &comic
+        .get_comic_download_dir_name()
+        .context("Failed to get comic download directory name")?;
+    let zip_path = export_dir.join(format!("{download_dir_name}.{extension}"));
     let zip_file = std::fs::File::create(&zip_path).context(format!(
         "`{comic_title}` failed to create file `{}`",
         zip_path.display()
@@ -109,7 +116,7 @@ pub fn cbz(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
         .write_all(comic_info_xml.as_bytes())
         .context(format!("`{comic_title}` failed to write `ComicInfo.xml`"))?;
     // Iterate through download directory and write files into cbz
-    let image_paths = std::fs::read_dir(&download_dir)
+    let image_paths = std::fs::read_dir(download_dir)
         .context(format!(
             "`{comic_title}` failed to read directory `{}`",
             download_dir.display()
@@ -183,8 +190,13 @@ pub fn pdf(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
         success: false,
     };
 
-    let download_dir = comic.get_download_dir(app);
-    let export_dir = comic.get_export_dir(app);
+    let download_dir = comic
+        .comic_download_dir
+        .as_ref()
+        .context("`comic_download_dir` field is `None`")?;
+    let export_dir = comic
+        .get_comic_export_dir(app)
+        .context("Failed to get comic export directory")?;
     // Ensure export directory exists
     std::fs::create_dir_all(&export_dir).context(format!(
         "Failed to create directory `{}`",
@@ -192,9 +204,11 @@ pub fn pdf(app: &AppHandle, comic: &Comic) -> anyhow::Result<()> {
     ))?;
     // Create PDF
     let extension = Archive::Pdf.extension();
-    let dir_name = &comic.dir_name;
-    let pdf_path = export_dir.join(format!("{dir_name}.{extension}"));
-    create_pdf(&download_dir, &pdf_path).context("Failed to create PDF")?;
+    let download_dir_name = &comic
+        .get_comic_download_dir_name()
+        .context("Failed to get comic download directory name")?;
+    let pdf_path = export_dir.join(format!("{download_dir_name}.{extension}"));
+    create_pdf(download_dir, &pdf_path).context("Failed to create PDF")?;
     // Set success to true to ensure that the end event is sent
     pdf_event_guard.success = true;
 

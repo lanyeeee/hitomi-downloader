@@ -5,7 +5,7 @@ import { SelectOption, useMessage, useNotification } from 'naive-ui'
 import ComicCard from '../components/ComicCard.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { SearchOutline, ArrowForwardOutline } from '@vicons/ionicons5'
+import { PhMagnifyingGlass, PhArrowRight } from '@phosphor-icons/vue'
 import FloatLabelInput from '../components/FloatLabelInput.vue'
 
 const { t } = useI18n()
@@ -251,7 +251,7 @@ defineExpose({ search })
       <n-button :loading="searching" type="primary" class="w-15%" size="small" @click="search(searchInput.trim(), 1)">
         <template #icon>
           <n-icon size="22">
-            <SearchOutline />
+            <PhMagnifyingGlass />
           </n-icon>
         </template>
       </n-button>
@@ -268,7 +268,7 @@ defineExpose({ search })
       <n-button type="primary" class="w-15%" size="small" @click="pickComic">
         <template #icon>
           <n-icon size="22">
-            <ArrowForwardOutline />
+            <PhArrowRight />
           </n-icon>
         </template>
       </n-button>

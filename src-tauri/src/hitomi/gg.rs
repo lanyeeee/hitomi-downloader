@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::OnceLock};
 
 use chrono::Utc;
-use regex::Regex;
+use regex_lite::Regex;
 
 use crate::hitomi_client::HitomiClient;
 
