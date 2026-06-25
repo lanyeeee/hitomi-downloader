@@ -314,7 +314,7 @@ impl DownloadTask {
 
         let get_img_urls_task = self.comic.files.iter().map(|file| {
             let ext = match self.download_format {
-                DownloadFormat::Webp => Ext::Webp,
+                DownloadFormat::Webp | DownloadFormat::Png | DownloadFormat::Jpg => Ext::Webp,
                 DownloadFormat::Avif => Ext::Avif,
             };
             image_url_from_image(id, file, ext)
@@ -660,8 +660,34 @@ impl DownloadImgTask {
         };
 
         tracing::trace!(id, comic_title, url, "Image downloaded to memory");
+        // Convert WebP to PNG/JPG if needed
+        let data_to_write: Vec<u8> = match self.download_task.download_format {
+            DownloadFormat::Png | DownloadFormat::Jpg => {
+                let img_format = if self.download_task.download_format == DownloadFormat::Png {
+                    image::ImageFormat::Png
+                } else {
+                    image::ImageFormat::Jpeg
+                };
+                let img = match image::load_from_memory(&img_data) {
+                    Ok(img) => img,
+                    Err(err) => {
+                        let err_title = format!("Failed to decode image `{url}`");
+                        tracing::error!(err_title, message = %err);
+                        return;
+                    }
+                };
+                let mut buf = Vec::new();
+                if let Err(err) = img.write_to(&mut std::io::Cursor::new(&mut buf), img_format) {
+                    let err_title = format!("Failed to encode image `{url}`");
+                    tracing::error!(err_title, message = %err);
+                    return;
+                }
+                buf
+            }
+            _ => img_data.to_vec(),
+        };
         // save image
-        if let Err(err) = std::fs::write(&save_path, &img_data).map_err(anyhow::Error::from) {
+        if let Err(err) = std::fs::write(&save_path, &data_to_write).map_err(anyhow::Error::from) {
             let err_title = format!("Failed to save image `{}`", save_path.display());
             let string_chain = err.to_string_chain();
             tracing::error!(err_title, message = string_chain);
@@ -761,6 +787,9 @@ pub struct DirFmtParams {
     #[serde(rename = "type")]
     type_field: String,
     artists: String,
+    characters: String,
+    tags: String,
+    series: String,
 }
 
 impl Comic {
@@ -774,7 +803,10 @@ impl Comic {
             language: self.language.clone(),
             language_localname: self.language_localname.clone(),
             type_field: self.type_field.clone(),
-            artists: self.artists.join(", "),
+            artists: self.artists.join(","),
+            characters: self.characters.join(","),
+            tags: self.tags.iter().map(|t| t.tag.clone()).collect::<Vec<_>>().join(","),
+            series: self.parodys.join(","),
         };
         let comic_download_dir = Comic::get_comic_download_dir_by_fmt(app, &fmt_params).context(
             format!("Failed to get download directory by fmt of `{comic_title}`"),

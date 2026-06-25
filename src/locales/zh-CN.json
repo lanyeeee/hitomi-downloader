@@ -47,6 +47,7 @@
     "name": "配置",
     "download_format": "下载格式",
     "avif_warning": "无法导出为pdf",
+    "png_jpg_note": "先下载WebP再本地转换(速度较慢)",
     "proxy_mode": "代理模式",
     "system_proxy": "系统代理",
     "no_proxy": "直连",
@@ -62,6 +63,9 @@
       "artists": "作者",
       "language": "语言名(例如english, chinese)",
       "language_localname": "本地化语言名(例如English, 中文)",
+      "characters": "角色(逗号分隔)",
+      "tags": "标签(逗号分隔)",
+      "series": "系列/原作(逗号分隔)",
       "for_example": "例如格式",
       "directory_result": "下载漫画2829145会产生三层文件夹，分别是"
     }

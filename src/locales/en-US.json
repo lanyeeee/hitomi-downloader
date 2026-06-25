@@ -47,6 +47,7 @@
     "name": "Settings",
     "download_format": "Download Format",
     "avif_warning": "Can not export to PDF",
+    "png_jpg_note": "Downloaded as WebP then converted locally (slower)",
     "proxy_mode": "Proxy Mode",
     "system_proxy": "System",
     "no_proxy": "No Proxy",
@@ -62,6 +63,9 @@
       "artists": "Comic Authors",
       "language": "Language Name",
       "language_localname": "Localized Language Name",
+      "characters": "Characters (comma-separated)",
+      "tags": "Tags (comma-separated)",
+      "series": "Series / Parody (comma-separated)",
       "for_example": "For example",
       "directory_result": "Download comic 2829145 will create 3 nested folders:"
     }

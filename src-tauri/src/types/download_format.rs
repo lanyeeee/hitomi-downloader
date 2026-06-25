@@ -6,6 +6,8 @@ pub enum DownloadFormat {
     #[default]
     Webp,
     Avif,
+    Png,
+    Jpg,
 }
 impl DownloadFormat {
     // TODO: use `self` instead of `&self`
@@ -13,6 +15,8 @@ impl DownloadFormat {
         match self {
             DownloadFormat::Webp => "webp",
             DownloadFormat::Avif => "avif",
+            DownloadFormat::Png => "png",
+            DownloadFormat::Jpg => "jpg",
         }
     }
 }

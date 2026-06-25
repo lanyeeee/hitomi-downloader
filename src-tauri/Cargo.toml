@@ -51,7 +51,7 @@ strfmt = { version = "0.2.4" }
 bytes = { version = "1.10.1" }
 lopdf = { git = "https://github.com/lanyeeee/lopdf", features = ["embed_image_webp"] }
 uuid = { version = "1.16.0", features = ["v4"] }
-image = { version = "0.25.6", features = ["webp"], default-features = false }
+image = { version = "0.25.6", features = ["webp", "png", "jpeg"], default-features = false }
 zip = { version = "4.0.0", default-features = false }
 walkdir = { version = "2.5.0" }
 

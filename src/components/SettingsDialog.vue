@@ -40,6 +40,18 @@ async function showConfigInFileManager() {
               <n-radio value="Avif">avif</n-radio>
             </template>
           </n-tooltip>
+          <n-tooltip placement="top" trigger="hover">
+            {{ t('settings_dialog.png_jpg_note') }}
+            <template #trigger>
+              <n-radio value="Png">png</n-radio>
+            </template>
+          </n-tooltip>
+          <n-tooltip placement="top" trigger="hover">
+            {{ t('settings_dialog.png_jpg_note') }}
+            <template #trigger>
+              <n-radio value="Jpg">jpg</n-radio>
+            </template>
+          </n-tooltip>
         </n-radio-group>
         <n-radio-group class="flex gap-2" v-model:value="store.config.proxyMode">
           {{ t('settings_dialog.proxy_mode') }}
@@ -95,6 +107,18 @@ async function showConfigInFileManager() {
             <div>
               <span class="rounded bg-gray-500 px-1">language_localname</span>
               <span class="ml-2">{{ t('settings_dialog.directory_format.language_localname') }}</span>
+            </div>
+            <div>
+              <span class="rounded bg-gray-500 px-1">characters</span>
+              <span class="ml-2">{{ t('settings_dialog.directory_format.characters') }}</span>
+            </div>
+            <div>
+              <span class="rounded bg-gray-500 px-1">tags</span>
+              <span class="ml-2">{{ t('settings_dialog.directory_format.tags') }}</span>
+            </div>
+            <div>
+              <span class="rounded bg-gray-500 px-1">series</span>
+              <span class="ml-2">{{ t('settings_dialog.directory_format.series') }}</span>
             </div>
           </div>
           <div class="font-semibold mt-2">{{ t('settings_dialog.directory_format.for_example') }}</div>
