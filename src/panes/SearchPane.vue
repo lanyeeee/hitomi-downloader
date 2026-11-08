@@ -5,7 +5,7 @@ import { SelectOption, useMessage, useNotification } from 'naive-ui'
 import ComicCard from '../components/ComicCard.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { PhMagnifyingGlass, PhArrowRight } from '@phosphor-icons/vue'
+import { PhMagnifyingGlass, PhArrowRight, PhFunnel } from '@phosphor-icons/vue'
 import FloatLabelInput from '../components/FloatLabelInput.vue'
 
 const { t } = useI18n()
@@ -274,7 +274,8 @@ defineExpose({ search })
 
 <template>
   <div class="h-full flex flex-col gap-2">
-    <n-input-group class="box-border px-2 pt-2">
+    
+      <n-input-group class="box-border px-2 pt-2">
       <FloatLabelInput
         :label="t('search_pane.search_by_query')"
         ref="searchInputRef"
@@ -318,26 +319,33 @@ defineExpose({ search })
       </n-button>
     </n-input-group>
 
-    <n-input-group class="box-border px-2">      
-      <n-input
+    <n-input-group class="box-border px-2">
+      <FloatLabelInput
+        :label="t('search_pane.pages_placeholder')"
+        class="text-align-left"
+        size="small"        
         v-model:value="pageFilterInput"
-        :placeholder="t('search_pane.pages_placeholder')"
-        size="small"
-        clearable
-        @keydown.enter="applyPageFilter" />
-      <n-button
-        type="primary"
-        size="small"
-        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        clearable        
+        @keydown.enter="applyPageFilter" 
+      />
+      <n-button type="primary" class="w-15%" :disabled="!(store.searchResult?.comics.length ?? 0)" size="small"
         @click="applyPageFilter">
         {{ t('search_pane.filter_button') }}
+        <template #icon>
+          <n-icon size="22">
+            <PhFunnel />
+          </n-icon>
+        </template>
       </n-button>
-      <n-button
-        v-if="pageFilterApplied"
-        type="default"
-        size="small"
-        @click="clearPageFilter">
-        {{ t('search_pane.filter_clear') }}
+      
+      <n-button v-if="pageFilterApplied" type="primary" class="w-15%"
+          :disabled="!(store.searchResult?.comics.length ?? 0)" size="small" @click="clearPageFilter">
+          {{ t('search_pane.filter_clear') }}
+          <template #icon>
+            <n-icon size="22">
+              <PhFunnel />
+            </n-icon>
+          </template>
       </n-button>
     </n-input-group>
 
@@ -357,6 +365,7 @@ defineExpose({ search })
       class="box-border p-2 pt-0 mt-auto"
       :page-count="store.searchResult.totalPage"
       :page="currentPage"
-      @update:page="handlePageChange" />
+      @update:page="handlePageChange"
+    />
   </div>
 </template>

@@ -95,7 +95,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="store.config !== undefined" class="h-screen flex flex-col">
+  <div v-if="store.config !== undefined" class="h-screen flex flex-col p-3">
     <div class="flex flex-1 overflow-hidden">
       <n-tabs class="h-full w-1/2" v-model:value="store.currentTabName" type="line" size="small" animated>
         <n-tab-pane
