@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import AppContent from './AppContent.vue'
 import { useStore } from './store.ts'
-import { GlobalThemeOverrides } from 'naive-ui'
+import { GlobalThemeOverrides, darkTheme } from 'naive-ui'
 
 const store = useStore()
 const themeOverrides: GlobalThemeOverrides = {
@@ -16,13 +16,15 @@ const themeOverrides: GlobalThemeOverrides = {
   },
 }
 
+const isDark = ref(false)
+
 function updateTheme() {
   const t = store.theme
-  const dark =
+  isDark.value =
     t === 'system'
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
       : t === 'dark'
-  document.documentElement.classList.toggle('dark', dark)
+  document.documentElement.classList.toggle('dark', isDark.value)
 }
 
 onMounted(() => {
@@ -39,7 +41,7 @@ watch(() => store.theme, updateTheme)
 </script>
 
 <template>
-  <n-config-provider :theme-overrides="themeOverrides">
+  <n-config-provider :theme="isDark ? darkTheme : null" :theme-overrides="themeOverrides">
     <n-modal-provider>
       <n-notification-provider placement="bottom-right">
         <n-message-provider>
