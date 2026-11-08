@@ -20,6 +20,50 @@ const searchInputRef = ref<InstanceType<typeof FloatLabelInput>>()
 const comicIdInput = ref<string>('')
 const currentPage = ref<number>(1)
 const comicCardContainerRef = ref<HTMLElement>()
+
+// Filtro de páginas aplicado sobre el cache de resultados (sin re-fetch)
+const pageFilterInput = ref<string>('')
+const pageFilterApplied = ref<boolean>(false)
+type PageOp = '>' | '<' | '=='
+interface PageFilter { op: PageOp; value: number }
+const pageFilter = ref<PageFilter | null>(null)
+
+function parsePageFilter(input: string): PageFilter | null {
+  const m = input.trim().match(/^pages?:\s*(>|<|=)?\s*(\d+)$/i)
+  if (!m) return null
+  const op = m[1] === '>' ? '>' : m[1] === '<' ? '<' : '=='
+  return { op, value: parseInt(m[2], 10) }
+}
+
+const comicsRaw = computed(() => store.searchResult?.comics ?? [])
+
+const filteredComics = computed(() => {
+  if (!pageFilterApplied.value || !pageFilter.value) return comicsRaw.value
+  const { op, value } = pageFilter.value
+  return comicsRaw.value.filter((comic) => {
+    const pages = comic.files?.length ?? 0
+    if (op === '>') return pages > value
+    if (op === '<') return pages < value
+    return pages === value
+  })
+})
+
+function applyPageFilter() {
+  const parsed = parsePageFilter(pageFilterInput.value)
+  if (!parsed) {
+    message.warning(() => t('search_pane.invalid_page_filter'))
+    return
+  }
+  if (!store.searchResult?.comics.length) return
+  pageFilter.value = parsed
+  pageFilterApplied.value = true
+}
+
+function clearPageFilter() {
+  pageFilterInput.value = ''
+  pageFilter.value = null
+  pageFilterApplied.value = false
+}
 const {
   onSuggestionSelect,
   getSearchSuggestions,
@@ -255,7 +299,7 @@ defineExpose({ search })
           </n-icon>
         </template>
       </n-button>
-    </n-input-group>
+    </n-input-group>  
 
     <n-input-group class="box-border px-2">
       <FloatLabelInput
@@ -274,15 +318,38 @@ defineExpose({ search })
       </n-button>
     </n-input-group>
 
+    <n-input-group class="box-border px-2">      
+      <n-input
+        v-model:value="pageFilterInput"
+        :placeholder="t('search_pane.pages_placeholder')"
+        size="small"
+        clearable
+        @keydown.enter="applyPageFilter" />
+      <n-button
+        type="primary"
+        size="small"
+        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        @click="applyPageFilter">
+        {{ t('search_pane.filter_button') }}
+      </n-button>
+      <n-button
+        v-if="pageFilterApplied"
+        type="default"
+        size="small"
+        @click="clearPageFilter">
+        {{ t('search_pane.filter_clear') }}
+      </n-button>
+    </n-input-group>
+
     <div
       v-if="store.searchResult !== undefined"
       ref="comicCardContainerRef"
       class="flex flex-col gap-row-2 overflow-auto box-border px-2">
       <comic-card
-        v-for="(comic, index) in store.searchResult.comics"
+        v-for="comic in filteredComics"
         :key="comic.id"
         :search="search"
-        v-model:comic="store.searchResult.comics[index]" />
+        :comic="comic" />
     </div>
 
     <n-pagination
