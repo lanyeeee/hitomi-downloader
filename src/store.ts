@@ -3,6 +3,8 @@ import { Comic, commands, Config, SearchResult } from './bindings.ts'
 import { ref } from 'vue'
 import { CurrentTabName, ProgressData } from './types.ts'
 
+export type Theme = 'light' | 'dark' | 'system'
+
 export const useStore = defineStore('store', () => {
   const config = ref<Config>()
   const pickedComic = ref<Comic>()
@@ -10,6 +12,12 @@ export const useStore = defineStore('store', () => {
   const progresses = ref<Map<number, ProgressData>>(new Map())
   const covers = ref<Map<number, string>>(new Map())
   const searchResult = ref<SearchResult>()
+  const theme = ref<Theme>('system')
+
+  function setTheme(value: Theme) {
+    theme.value = value
+    localStorage.setItem('theme', value)
+  }
 
   async function loadCover(id: number, url: string) {
     const result = await commands.getCoverData(url)
@@ -23,5 +31,5 @@ export const useStore = defineStore('store', () => {
     covers.value.set(id, cover)
   }
 
-  return { config, pickedComic, currentTabName, progresses, covers, loadCover, searchResult }
+  return { config, pickedComic, currentTabName, progresses, covers, loadCover, searchResult, theme, setTheme }
 })

@@ -66,6 +66,10 @@
       "directory_result": "下载漫画2829145会产生三层文件夹，分别是"
     }
   },
+  "theme": {
+    "dark_mode": "深色模式",
+    "light_mode": "浅色模式"
+  },
   "search_pane": {
     "name": "漫画搜索",
     "search_by_query": "关键词",

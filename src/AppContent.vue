@@ -1,8 +1,8 @@
 <script setup lang="tsx">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useMessage, useNotification } from 'naive-ui'
 import { commands } from './bindings.ts'
-import { useStore } from './store.ts'
+import { useStore, Theme } from './store.ts'
 import LogViewer from './components/LogViewer.vue'
 import { useI18n } from './utils.ts'
 import AboutDialog from './components/AboutDialog.vue'
@@ -10,11 +10,26 @@ import SearchPane from './panes/SearchPane.vue'
 import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
-import { PhClockCounterClockwise, PhInfo, PhTranslate } from '@phosphor-icons/vue'
+import { PhClockCounterClockwise, PhInfo, PhTranslate, PhSun, PhMoon } from '@phosphor-icons/vue'
 import { locales } from './locales'
 
 const { t, locale } = useI18n()
 const store = useStore()
+
+const isDark = computed(() => {
+  const t = store.theme
+  if (t === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
+  return t === 'dark'
+})
+
+function toggleTheme() {
+  const themes: Theme[] = ['light', 'dark', 'system']
+  const current = store.theme ?? 'system'
+  const nextIndex = (themes.indexOf(current) + 1) % themes.length
+  store.setTheme(themes[nextIndex])
+}
 
 const message = useMessage()
 const notification = useNotification()
@@ -121,7 +136,18 @@ onMounted(async () => {
             {{ t('about_dialog.name') }}
           </n-button>
 
-          <div class="ml-auto flex items-center">
+          <div class="ml-auto flex items-center gap-2">
+            <n-button
+              @click="toggleTheme"
+              size="small"
+              :title="isDark ? t('theme.light_mode') : t('theme.dark_mode')">
+              <template #icon>
+                <n-icon size="20">
+                  <PhSun v-if="!isDark" />
+                  <PhMoon v-else />
+                </n-icon>
+              </template>
+            </n-button>
             <n-icon size="28">
               <PhTranslate />
             </n-icon>

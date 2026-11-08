@@ -66,6 +66,10 @@
       "directory_result": "Descargar el cómic 2829145 creará 3 carpetas anidadas:"
     }
   },
+  "theme": {
+    "dark_mode": "Modo oscuro",
+    "light_mode": "Modo claro"
+  },
   "search_pane": {
     "name": "Buscar",
     "search_by_query": "Palabras clave",

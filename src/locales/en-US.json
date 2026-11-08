@@ -66,6 +66,10 @@
       "directory_result": "Download comic 2829145 will create 3 nested folders:"
     }
   },
+  "theme": {
+    "dark_mode": "Dark mode",
+    "light_mode": "Light mode"
+  },
   "search_pane": {
     "name": "Search",
     "search_by_query": "Keywords",
