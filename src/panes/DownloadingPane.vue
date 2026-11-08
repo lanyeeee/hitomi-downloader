@@ -167,8 +167,7 @@ async function showDownloadDirInFileManager() {
       </n-tab-pane>
     </n-tabs>
 
-    <span class="ml-auto mr-2 mb-2">{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
-
+    <span class="ml-auto mr-2">{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
     <settings-dialog v-model:showing="settingsDialogShowing" />
   </div>
 </template>
