@@ -51,3 +51,10 @@ watch(() => store.theme, updateTheme)
     </n-modal-provider>
   </n-config-provider>
 </template>
+
+<style>
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+</style>
