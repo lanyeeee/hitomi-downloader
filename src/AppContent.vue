@@ -134,14 +134,11 @@ onMounted(async () => {
             </template>
             {{ t('about_dialog.name') }}
           </n-button>
-
-          <div class="ml-auto flex items-center gap-2">
-            <n-button
-              @click="toggleTheme"
-              size="small"
+          <n-button
+              @click="toggleTheme"              
               :title="themeLabel">
               <template #icon>
-                <n-icon size="20">
+                <n-icon size="22">
                   <PhSun v-if="store.theme === 'light'" />
                   <PhMoon v-else-if="store.theme === 'dark'" />
                   <PhMonitor v-else />
@@ -149,6 +146,8 @@ onMounted(async () => {
               </template>
               {{ themeLabel }}
             </n-button>
+
+          <div class="ml-auto flex items-center gap-2">            
             <n-icon size="28">
               <PhTranslate />
             </n-icon>
