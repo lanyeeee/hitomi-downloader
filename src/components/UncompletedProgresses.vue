@@ -232,19 +232,23 @@ function stateToColorClass(state: DownloadTaskState) {
     <span class="ml-auto select-none">{{ t('uncompleted_progresses.usage_tips') }}</span>
     <div class="h-full select-none">
       <div
-        v-for="[comicId, { state, comic, percentage, indicator }] in uncompletedProgresses"
-        :key="comicId"
-        ref="selectableRefs"
-        :data-key="comicId"
-        :class="[
-          'selectable p-3 m-1 mb-2 rounded-lg',
-          selectedIds.has(comicId) ? 'selected shadow-md' : 'hover:bg-gray-1',
-        ]"
-        @dblclick="() => onProgressDoubleClick(state, comicId)"
-        @contextmenu="() => onProgressContextMenu(comicId)">
-        <div class="flex items-center" :title="comic.title">
-          <div class="text-ellipsis whitespace-nowrap overflow-hidden">{{ comic.title }}</div>
-        </div>
+    v-for="[comicId, { state, comic, percentage, indicator }] in uncompletedProgresses"
+    :key="comicId"
+    ref="selectableRefs"
+    :data-key="comicId"
+    :class="[
+      'selectable p-3 m-1 mb-2 rounded-lg transition-colors duration-200',
+      'bg-white hover:bg-gray-100 dark:bg-[#272d3d] dark:hover:bg-[#343b4f]',
+      selectedIds.has(comicId) ? '!bg-[#3a415a] dark:!bg-[#3a415a] shadow-md' : '',
+    ]"
+    @dblclick="() => onProgressDoubleClick(state, comicId)"
+    @contextmenu="() => onProgressContextMenu(comicId)"
+  >
+    <div class="flex items-center" :title="comic.title">
+      <div class="text-ellipsis whitespace-nowrap overflow-hidden text-gray-800 dark:text-white">
+        {{ comic.title }}
+      </div>
+    </div>
         <div class="flex items-center" :title="comic.title">
           <n-icon :class="[stateToColorClass(state), 'mr-2']" :size="22">
             <PhCloudArrowDown v-if="state === 'Downloading'" />
