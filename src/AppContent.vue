@@ -95,8 +95,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="store.config !== undefined" class="h-screen flex flex-col p-3">
-    <div class="flex flex-1 overflow-hidden">
+  <div v-if="store.config !== undefined" class="h-screen flex flex-col">
+    <div class="flex flex-1 overflow-hidden p-2">
       <n-tabs class="h-full w-1/2" v-model:value="store.currentTabName" type="line" size="small" animated>
         <n-tab-pane
           class="h-full overflow-auto p-0!"
@@ -155,7 +155,7 @@ onMounted(async () => {
           </div>
         </div>
         <downloading-pane
-          class="flex-1 overflow-auto"
+          class="flex-1 overflow-auto pb-3"
           v-if="searchPaneRef !== undefined"
           :search="searchPaneRef.search" />
       </div>
