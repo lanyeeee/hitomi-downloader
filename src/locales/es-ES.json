@@ -68,7 +68,8 @@
   },
   "theme": {
     "dark_mode": "Modo oscuro",
-    "light_mode": "Modo claro"
+    "light_mode": "Modo claro",
+    "system_mode": "Sistema"
   },
   "search_pane": {
     "name": "Buscar",

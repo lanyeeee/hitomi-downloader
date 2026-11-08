@@ -68,7 +68,8 @@
   },
   "theme": {
     "dark_mode": "Dark mode",
-    "light_mode": "Light mode"
+    "light_mode": "Light mode",
+    "system_mode": "System"
   },
   "search_pane": {
     "name": "Search",

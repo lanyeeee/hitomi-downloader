@@ -68,7 +68,8 @@
   },
   "theme": {
     "dark_mode": "深色模式",
-    "light_mode": "浅色模式"
+    "light_mode": "浅色模式",
+    "system_mode": "跟随系统"
   },
   "search_pane": {
     "name": "漫画搜索",

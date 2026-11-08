@@ -10,22 +10,21 @@ import SearchPane from './panes/SearchPane.vue'
 import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
-import { PhClockCounterClockwise, PhInfo, PhTranslate, PhSun, PhMoon } from '@phosphor-icons/vue'
+import { PhClockCounterClockwise, PhInfo, PhTranslate, PhSun, PhMoon, PhMonitor } from '@phosphor-icons/vue'
 import { locales } from './locales'
 
 const { t, locale } = useI18n()
 const store = useStore()
 
-const isDark = computed(() => {
-  const t = store.theme
-  if (t === 'system') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-  }
-  return t === 'dark'
+const themeLabel = computed(() => {
+  const mode = store.theme
+  if (mode === 'system') return t('theme.system_mode')
+  if (mode === 'dark') return t('theme.dark_mode')
+  return t('theme.light_mode')
 })
 
 function toggleTheme() {
-  const themes: Theme[] = ['light', 'dark', 'system']
+  const themes: Theme[] = ['light', 'system', 'dark']
   const current = store.theme ?? 'system'
   const nextIndex = (themes.indexOf(current) + 1) % themes.length
   store.setTheme(themes[nextIndex])
@@ -140,13 +139,15 @@ onMounted(async () => {
             <n-button
               @click="toggleTheme"
               size="small"
-              :title="isDark ? t('theme.light_mode') : t('theme.dark_mode')">
+              :title="themeLabel">
               <template #icon>
                 <n-icon size="20">
-                  <PhSun v-if="!isDark" />
-                  <PhMoon v-else />
+                  <PhSun v-if="store.theme === 'light'" />
+                  <PhMoon v-else-if="store.theme === 'dark'" />
+                  <PhMonitor v-else />
                 </n-icon>
               </template>
+              {{ themeLabel }}
             </n-button>
             <n-icon size="28">
               <PhTranslate />
