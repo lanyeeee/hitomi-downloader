@@ -146,6 +146,7 @@ async function pickComic() {
   if (comicId === undefined) {
     notification.error({
       title: () => t('search_pane.comic_id_invalid'),
+      duration: 4000,
       description: () => t('search_pane.enter_comic_id_or_url'),
     })
     return

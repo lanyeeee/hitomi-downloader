@@ -84,8 +84,8 @@ onMounted(async () => {
     if (level === 'ERROR') {
       notification.error({
         title: () => fields['err_title'] as string,
+        duration: 4000,
         description: () => fields['message'] as string,
-        duration: 0,
       })
     }
   })
