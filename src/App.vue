@@ -20,10 +20,7 @@ const isDark = ref(false)
 
 function updateTheme() {
   const t = store.theme
-  isDark.value =
-    t === 'system'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : t === 'dark'
+  isDark.value = t === 'system' ? window.matchMedia('(prefers-color-scheme: dark)').matches : t === 'dark'
   document.documentElement.classList.toggle('dark', isDark.value)
 }
 

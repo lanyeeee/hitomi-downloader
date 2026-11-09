@@ -14,7 +14,7 @@ export const useStore = defineStore('store', () => {
     dirFmt: '',
     proxyHost: '',
     proxyMode: 'System',
-    proxyPort: 0
+    proxyPort: 0,
   })
   const pickedComic = ref<Comic>()
   const currentTabName = ref<CurrentTabName>('search')

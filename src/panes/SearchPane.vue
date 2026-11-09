@@ -25,7 +25,10 @@ const comicCardContainerRef = ref<HTMLElement>()
 const pageFilterInput = ref<string>('')
 const pageFilterApplied = ref<boolean>(false)
 type PageOp = '>' | '<' | '=='
-interface PageFilter { op: PageOp; value: number }
+interface PageFilter {
+  op: PageOp
+  value: number
+}
 const pageFilter = ref<PageFilter | null>(null)
 
 function parsePageFilter(input: string): PageFilter | null {
@@ -275,8 +278,7 @@ defineExpose({ search })
 
 <template>
   <div class="h-full flex flex-col gap-2">
-    
-      <n-input-group class="box-border px-2 pt-2">
+    <n-input-group class="box-border px-2 pt-2">
       <FloatLabelInput
         :label="t('search_pane.search_by_query')"
         ref="searchInputRef"
@@ -301,7 +303,7 @@ defineExpose({ search })
           </n-icon>
         </template>
       </n-button>
-    </n-input-group>  
+    </n-input-group>
 
     <n-input-group class="box-border px-2">
       <FloatLabelInput
@@ -324,12 +326,15 @@ defineExpose({ search })
       <FloatLabelInput
         :label="t('search_pane.pages_placeholder')"
         class="text-align-left"
-        size="small"        
+        size="small"
         v-model:value="pageFilterInput"
-        clearable        
-        @keydown.enter="applyPageFilter" 
-      />
-      <n-button type="primary" class="w-15%" :disabled="!(store.searchResult?.comics.length ?? 0)" size="small"
+        clearable
+        @keydown.enter="applyPageFilter" />
+      <n-button
+        type="primary"
+        class="w-15%"
+        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        size="small"
         @click="applyPageFilter">
         {{ t('search_pane.filter_button') }}
         <template #icon>
@@ -338,15 +343,20 @@ defineExpose({ search })
           </n-icon>
         </template>
       </n-button>
-      
-      <n-button v-if="pageFilterApplied" type="primary" class="w-15%"
-          :disabled="!(store.searchResult?.comics.length ?? 0)" size="small" @click="clearPageFilter">
-          {{ t('search_pane.filter_clear') }}
-          <template #icon>
-            <n-icon size="22">
-              <PhFunnel />
-            </n-icon>
-          </template>
+
+      <n-button
+        v-if="pageFilterApplied"
+        type="primary"
+        class="w-15%"
+        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        size="small"
+        @click="clearPageFilter">
+        {{ t('search_pane.filter_clear') }}
+        <template #icon>
+          <n-icon size="22">
+            <PhFunnel />
+          </n-icon>
+        </template>
       </n-button>
     </n-input-group>
 
@@ -354,11 +364,7 @@ defineExpose({ search })
       v-if="store.searchResult !== undefined"
       ref="comicCardContainerRef"
       class="flex flex-col gap-row-2 overflow-auto box-border px-2">
-      <comic-card
-        v-for="comic in filteredComics"
-        :key="comic.id"
-        :search="search"
-        :comic="comic" />
+      <comic-card v-for="comic in filteredComics" :key="comic.id" :search="search" :comic="comic" />
     </div>
 
     <n-pagination
@@ -366,7 +372,6 @@ defineExpose({ search })
       class="box-border p-2 pt-0 mt-auto"
       :page-count="store.searchResult.totalPage"
       :page="currentPage"
-      @update:page="handlePageChange"
-    />
+      @update:page="handlePageChange" />
   </div>
 </template>

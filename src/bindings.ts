@@ -3,237 +3,280 @@
 
 /** user-defined commands **/
 
-
 export const commands = {
-async greet(name: string) : Promise<string> {
-    return await TAURI_INVOKE("greet", { name });
-},
-async getConfig() : Promise<Config> {
-    return await TAURI_INVOKE("get_config");
-},
-async saveConfig(config: Config) : Promise<Result<null, CommandError>> {
+  async greet(name: string): Promise<string> {
+    return await TAURI_INVOKE('greet', { name })
+  },
+  async getConfig(): Promise<Config> {
+    return await TAURI_INVOKE('get_config')
+  },
+  async saveConfig(config: Config): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("save_config", { config }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async search(query: string, pageNum: number, sortByPopularity: boolean) : Promise<Result<SearchResult, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('save_config', { config }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async search(query: string, pageNum: number, sortByPopularity: boolean): Promise<Result<SearchResult, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("search", { query, pageNum, sortByPopularity }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getPage(ids: number[], pageNum: number) : Promise<Result<SearchResult, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('search', { query, pageNum, sortByPopularity }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getPage(ids: number[], pageNum: number): Promise<Result<SearchResult, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_page", { ids, pageNum }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getComic(id: number) : Promise<Result<Comic, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('get_page', { ids, pageNum }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getComic(id: number): Promise<Result<Comic, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_comic", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async createDownloadTask(comic: Comic) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('get_comic', { id }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async createDownloadTask(comic: Comic): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("create_download_task", { comic }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async pauseDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('create_download_task', { comic }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async pauseDownloadTask(id: number): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("pause_download_task", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async resumeDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('pause_download_task', { id }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async resumeDownloadTask(id: number): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("resume_download_task", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async cancelDownloadTask(id: number) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('resume_download_task', { id }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async cancelDownloadTask(id: number): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("cancel_download_task", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getDownloadedComics() : Promise<Comic[]> {
-    return await TAURI_INVOKE("get_downloaded_comics");
-},
-async exportPdf(comic: Comic) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('cancel_download_task', { id }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getDownloadedComics(): Promise<Comic[]> {
+    return await TAURI_INVOKE('get_downloaded_comics')
+  },
+  async exportPdf(comic: Comic): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("export_pdf", { comic }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async exportCbz(comic: Comic) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('export_pdf', { comic }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async exportCbz(comic: Comic): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("export_cbz", { comic }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getSearchSuggestions(query: string) : Promise<Result<Suggestion[], CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('export_cbz', { comic }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getSearchSuggestions(query: string): Promise<Result<Suggestion[], CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_search_suggestions", { query }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getLogsDirSize() : Promise<Result<number, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('get_search_suggestions', { query }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getLogsDirSize(): Promise<Result<number, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_logs_dir_size") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async showPathInFileManager(path: string) : Promise<Result<null, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('get_logs_dir_size') }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async showPathInFileManager(path: string): Promise<Result<null, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("show_path_in_file_manager", { path }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getCoverData(coverUrl: string) : Promise<Result<number[], CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('show_path_in_file_manager', { path }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getCoverData(coverUrl: string): Promise<Result<number[], CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_cover_data", { coverUrl }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async getSyncedComic(comic: Comic) : Promise<Result<Comic, CommandError>> {
+      return { status: 'ok', data: await TAURI_INVOKE('get_cover_data', { coverUrl }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
+  async getSyncedComic(comic: Comic): Promise<Result<Comic, CommandError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_synced_comic", { comic }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-}
+      return { status: 'ok', data: await TAURI_INVOKE('get_synced_comic', { comic }) }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
 }
 
 /** user-defined events **/
 
-
 export const events = __makeEvents__<{
-downloadSpeedEvent: DownloadSpeedEvent,
-downloadTaskEvent: DownloadTaskEvent,
-exportCbzEvent: ExportCbzEvent,
-exportPdfEvent: ExportPdfEvent,
-logEvent: LogEvent
+  downloadSpeedEvent: DownloadSpeedEvent
+  downloadTaskEvent: DownloadTaskEvent
+  exportCbzEvent: ExportCbzEvent
+  exportPdfEvent: ExportPdfEvent
+  logEvent: LogEvent
 }>({
-downloadSpeedEvent: "download-speed-event",
-downloadTaskEvent: "download-task-event",
-exportCbzEvent: "export-cbz-event",
-exportPdfEvent: "export-pdf-event",
-logEvent: "log-event"
+  downloadSpeedEvent: 'download-speed-event',
+  downloadTaskEvent: 'download-task-event',
+  exportCbzEvent: 'export-cbz-event',
+  exportPdfEvent: 'export-pdf-event',
+  logEvent: 'log-event',
 })
 
 /** user-defined constants **/
 
-
-
 /** user-defined types **/
 
-export type Comic = { id: number; title: string; japaneseTitle: string; language: string; languageLocalname: string; type: string; date: string; artists: string[]; groups: string[]; parodys: string[]; tags: Tag[]; related: number[]; languages: Language[]; characters: string[]; sceneIndexes: number[]; files: GalleryFiles[]; coverUrl: string; isDownloaded?: boolean | null; comicDownloadDir?: string | null }
+export type Comic = {
+  id: number
+  title: string
+  japaneseTitle: string
+  language: string
+  languageLocalname: string
+  type: string
+  date: string
+  artists: string[]
+  groups: string[]
+  parodys: string[]
+  tags: Tag[]
+  related: number[]
+  languages: Language[]
+  characters: string[]
+  sceneIndexes: number[]
+  files: GalleryFiles[]
+  coverUrl: string
+  isDownloaded?: boolean | null
+  comicDownloadDir?: string | null
+}
 export type CommandError = { err_title: string; err_message: string }
-export type Config = { downloadDir: string; exportDir: string; enableFileLogger: boolean; downloadFormat: DownloadFormat; dirFmt: string; proxyHost: string; proxyMode: ProxyMode; proxyPort: number }
-export type DownloadFormat = "Webp" | "Avif"
+export type Config = {
+  downloadDir: string
+  exportDir: string
+  enableFileLogger: boolean
+  downloadFormat: DownloadFormat
+  dirFmt: string
+  proxyHost: string
+  proxyMode: ProxyMode
+  proxyPort: number
+}
+export type DownloadFormat = 'Webp' | 'Avif'
 export type DownloadSpeedEvent = { speed: string }
-export type DownloadTaskEvent = { event: "Create"; data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number } } | { event: "Update"; data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number } }
-export type DownloadTaskState = "Pending" | "Downloading" | "Paused" | "Cancelled" | "Completed" | "Failed"
-export type ExportCbzEvent = { event: "Start"; data: { uuid: string; title: string } } | { event: "Error"; data: { uuid: string } } | { event: "End"; data: { uuid: string } }
-export type ExportPdfEvent = { event: "Start"; data: { uuid: string; title: string } } | { event: "Error"; data: { uuid: string } } | { event: "End"; data: { uuid: string } }
-export type GalleryFiles = { width: number; hash: string; haswebp?: number; hasavif?: number; hasjxl?: number; name: string; height: number }
+export type DownloadTaskEvent =
+  | {
+      event: 'Create'
+      data: { state: DownloadTaskState; comic: Comic; downloadedImgCount: number; totalImgCount: number }
+    }
+  | {
+      event: 'Update'
+      data: { comicId: number; state: DownloadTaskState; downloadedImgCount: number; totalImgCount: number }
+    }
+export type DownloadTaskState = 'Pending' | 'Downloading' | 'Paused' | 'Cancelled' | 'Completed' | 'Failed'
+export type ExportCbzEvent =
+  | { event: 'Start'; data: { uuid: string; title: string } }
+  | { event: 'Error'; data: { uuid: string } }
+  | { event: 'End'; data: { uuid: string } }
+export type ExportPdfEvent =
+  | { event: 'Start'; data: { uuid: string; title: string } }
+  | { event: 'Error'; data: { uuid: string } }
+  | { event: 'End'; data: { uuid: string } }
+export type GalleryFiles = {
+  width: number
+  hash: string
+  haswebp?: number
+  hasavif?: number
+  hasjxl?: number
+  name: string
+  height: number
+}
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key in string]: JsonValue }
 export type Language = { galleryid: number; language_localname: string; name: string }
-export type LogEvent = { timestamp: string; level: LogLevel; fields: { [key in string]: JsonValue }; target: string; filename: string; line_number: number }
-export type LogLevel = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR"
-export type ProxyMode = "System" | "NoProxy" | "Custom"
+export type LogEvent = {
+  timestamp: string
+  level: LogLevel
+  fields: { [key in string]: JsonValue }
+  target: string
+  filename: string
+  line_number: number
+}
+export type LogLevel = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
+export type ProxyMode = 'System' | 'NoProxy' | 'Custom'
 export type SearchResult = { comics: Comic[]; currentPage: number; totalPage: number; ids: number[] }
 export type Suggestion = { s: string; t: number; u: string; n: string }
 export type Tag = { tag: string; female: number; male: number }
 
 /** tauri-specta globals **/
 
-import {
-	invoke as TAURI_INVOKE,
-	Channel as TAURI_CHANNEL,
-} from "@tauri-apps/api/core";
-import * as TAURI_API_EVENT from "@tauri-apps/api/event";
-import { type WebviewWindow as __WebviewWindow__ } from "@tauri-apps/api/webviewWindow";
+import { invoke as TAURI_INVOKE, Channel as TAURI_CHANNEL } from '@tauri-apps/api/core'
+import * as TAURI_API_EVENT from '@tauri-apps/api/event'
+import { type WebviewWindow as __WebviewWindow__ } from '@tauri-apps/api/webviewWindow'
 
 type __EventObj__<T> = {
-	listen: (
-		cb: TAURI_API_EVENT.EventCallback<T>,
-	) => ReturnType<typeof TAURI_API_EVENT.listen<T>>;
-	once: (
-		cb: TAURI_API_EVENT.EventCallback<T>,
-	) => ReturnType<typeof TAURI_API_EVENT.once<T>>;
-	emit: null extends T
-		? (payload?: T) => ReturnType<typeof TAURI_API_EVENT.emit>
-		: (payload: T) => ReturnType<typeof TAURI_API_EVENT.emit>;
-};
+  listen: (cb: TAURI_API_EVENT.EventCallback<T>) => ReturnType<typeof TAURI_API_EVENT.listen<T>>
+  once: (cb: TAURI_API_EVENT.EventCallback<T>) => ReturnType<typeof TAURI_API_EVENT.once<T>>
+  emit: null extends T
+    ? (payload?: T) => ReturnType<typeof TAURI_API_EVENT.emit>
+    : (payload: T) => ReturnType<typeof TAURI_API_EVENT.emit>
+}
 
-export type Result<T, E> =
-	| { status: "ok"; data: T }
-	| { status: "error"; error: E };
+export type Result<T, E> = { status: 'ok'; data: T } | { status: 'error'; error: E }
 
-function __makeEvents__<T extends Record<string, any>>(
-	mappings: Record<keyof T, string>,
-) {
-	return new Proxy(
-		{} as unknown as {
-			[K in keyof T]: __EventObj__<T[K]> & {
-				(handle: __WebviewWindow__): __EventObj__<T[K]>;
-			};
-		},
-		{
-			get: (_, event) => {
-				const name = mappings[event as keyof T];
+function __makeEvents__<T extends Record<string, any>>(mappings: Record<keyof T, string>) {
+  return new Proxy(
+    {} as unknown as {
+      [K in keyof T]: __EventObj__<T[K]> & {
+        (handle: __WebviewWindow__): __EventObj__<T[K]>
+      }
+    },
+    {
+      get: (_, event) => {
+        const name = mappings[event as keyof T]
 
-				return new Proxy((() => {}) as any, {
-					apply: (_, __, [window]: [__WebviewWindow__]) => ({
-						listen: (arg: any) => window.listen(name, arg),
-						once: (arg: any) => window.once(name, arg),
-						emit: (arg: any) => window.emit(name, arg),
-					}),
-					get: (_, command: keyof __EventObj__<any>) => {
-						switch (command) {
-							case "listen":
-								return (arg: any) => TAURI_API_EVENT.listen(name, arg);
-							case "once":
-								return (arg: any) => TAURI_API_EVENT.once(name, arg);
-							case "emit":
-								return (arg: any) => TAURI_API_EVENT.emit(name, arg);
-						}
-					},
-				});
-			},
-		},
-	);
+        return new Proxy((() => {}) as any, {
+          apply: (_, __, [window]: [__WebviewWindow__]) => ({
+            listen: (arg: any) => window.listen(name, arg),
+            once: (arg: any) => window.once(name, arg),
+            emit: (arg: any) => window.emit(name, arg),
+          }),
+          get: (_, command: keyof __EventObj__<any>) => {
+            switch (command) {
+              case 'listen':
+                return (arg: any) => TAURI_API_EVENT.listen(name, arg)
+              case 'once':
+                return (arg: any) => TAURI_API_EVENT.once(name, arg)
+              case 'emit':
+                return (arg: any) => TAURI_API_EVENT.emit(name, arg)
+            }
+          },
+        })
+      },
+    },
+  )
 }
