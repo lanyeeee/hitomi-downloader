@@ -18,6 +18,14 @@ export const commands = {
       else return { status: 'error', error: e as any }
     }
   },
+  async testProxy(): Promise<Result<number, CommandError>> {
+    try {
+      return { status: 'ok', data: await TAURI_INVOKE('test_proxy') }
+    } catch (e) {
+      if (e instanceof Error) throw e
+      else return { status: 'error', error: e as any }
+    }
+  },
   async search(query: string, pageNum: number, sortByPopularity: boolean): Promise<Result<SearchResult, CommandError>> {
     try {
       return { status: 'ok', data: await TAURI_INVOKE('search', { query, pageNum, sortByPopularity }) }

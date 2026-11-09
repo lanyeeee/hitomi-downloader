@@ -32,6 +32,7 @@ pub fn run() {
             greet,
             get_config,
             save_config,
+            test_proxy,
             search,
             get_page,
             get_comic,

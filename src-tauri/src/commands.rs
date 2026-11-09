@@ -88,6 +88,16 @@ pub fn save_config(
 
 #[tauri::command(async)]
 #[specta::specta]
+pub async fn test_proxy(hitomi_client: State<'_, HitomiClient>) -> CommandResult<u64> {
+    let elapsed_ms = hitomi_client
+        .test_proxy()
+        .await
+        .map_err(|err| CommandError::from("test proxy failed", err))?;
+    Ok(elapsed_ms)
+}
+
+#[tauri::command(async)]
+#[specta::specta]
 pub async fn search(
     hitomi_client: State<'_, HitomiClient>,
     query: &str,

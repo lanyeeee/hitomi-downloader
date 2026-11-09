@@ -69,6 +69,23 @@ impl HitomiClient {
         *self.cover_client.write() = cover_client;
     }
 
+    /// Send a lightweight request through the configured proxy and return the elapsed time in
+    /// milliseconds.
+    pub async fn test_proxy(&self) -> anyhow::Result<u64> {
+        let client = reqwest::ClientBuilder::new()
+            .set_proxy(&self.app, "proxy_test")
+            .timeout(Duration::from_secs(20))
+            .build()?;
+
+        let started = std::time::Instant::now();
+        let status = client.get("https://hitomi.la/").send().await?.status();
+        if !status.is_success() {
+            return Err(anyhow!("unexpected status code `{status}`"));
+        }
+
+        Ok(started.elapsed().as_millis() as u64)
+    }
+
     pub async fn search(
         &self,
         query: &str,
@@ -166,7 +183,8 @@ fn create_api_client(app: &AppHandle) -> ClientWithMiddleware {
 
     let client = reqwest::ClientBuilder::new()
         .set_proxy(app, "api_client")
-        .timeout(Duration::from_secs(3))
+        // Slow proxies (e.g. Tor) need well over a few seconds per request
+        .timeout(Duration::from_secs(30))
         .redirect(reqwest::redirect::Policy::none())
         .build()
         .unwrap();
