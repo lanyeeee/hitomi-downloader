@@ -6,7 +6,16 @@ import { CurrentTabName, ProgressData } from './types.ts'
 export type Theme = 'light' | 'dark' | 'system'
 
 export const useStore = defineStore('store', () => {
-  const config = ref<Config>()
+  const config = ref<Config>({
+    downloadDir: '',
+    exportDir: '',
+    enableFileLogger: false,
+    downloadFormat: 'Webp',
+    dirFmt: '',
+    proxyHost: '',
+    proxyMode: 'System',
+    proxyPort: 0
+  })
   const pickedComic = ref<Comic>()
   const currentTabName = ref<CurrentTabName>('search')
   const progresses = ref<Map<number, ProgressData>>(new Map())
