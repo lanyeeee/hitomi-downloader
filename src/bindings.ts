@@ -186,9 +186,9 @@ export type Config = {
   proxyHost: string
   proxyMode: ProxyMode
   proxyPort: number
-  proxyProtocol: ProxyProtocol
-  proxyUsername: string
-  proxyPassword: string
+  proxyProtocol?: ProxyProtocol
+  proxyUsername?: string
+  proxyPassword?: string
 }
 export type DownloadFormat = 'Webp' | 'Avif'
 export type DownloadSpeedEvent = { speed: string }
