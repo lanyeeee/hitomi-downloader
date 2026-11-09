@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import { onMounted, ref, watch, computed } from 'vue'
-import { useMessage, useNotification } from 'naive-ui'
+import { onMounted, ref, computed } from 'vue'
+import { useNotification } from 'naive-ui'
 import { commands } from './bindings.ts'
 import { useStore, Theme } from './store.ts'
 import LogViewer from './components/LogViewer.vue'
@@ -30,7 +30,6 @@ function toggleTheme() {
   store.setTheme(themes[nextIndex])
 }
 
-const message = useMessage()
 const notification = useNotification()
 
 const logViewerShowing = ref<boolean>(false)
@@ -53,18 +52,6 @@ const activeDownloads = computed(() => {
   let status = `${count > 0 ? `(${count}) ` : ''}${t('downloading_pane.name')}`
   return status
 })
-
-watch(
-  () => store.config,
-  async () => {
-    if (store.config === undefined) {
-      return
-    }
-    await commands.saveConfig(store.config)
-    message.success(() => t('app_content.save_config_success'))
-  },
-  { deep: true },
-)
 
 onMounted(async () => {
   // block the browser right-click menu

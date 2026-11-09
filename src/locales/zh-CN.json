@@ -57,6 +57,13 @@
     "proxy_username": "用户名",
     "proxy_password": "密码",
     "proxy_credentials_tip": "可选。凭据会以明文保存在config.json中",
+    "save_config": "保存",
+    "save_config_failed": "保存配置失败",
+    "test_proxy": "测试连接",
+    "proxy_test_success": "代理正常（{ms} 毫秒）",
+    "proxy_test_failed": "代理测试失败",
+    "proxy_host_required": "请输入代理主机地址",
+    "proxy_port_invalid": "端口必须在 1 到 65535 之间",
     "open_config_directory": "打开配置目录",
     "directory_format": {
       "name": "文件夹格式",

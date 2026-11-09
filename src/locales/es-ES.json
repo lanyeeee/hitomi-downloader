@@ -57,6 +57,13 @@
     "proxy_username": "Usuario",
     "proxy_password": "Contraseña",
     "proxy_credentials_tip": "Opcional. Las credenciales se guardan sin cifrar en config.json",
+    "save_config": "Guardar",
+    "save_config_failed": "No se pudo guardar la configuración",
+    "test_proxy": "Probar conexión",
+    "proxy_test_success": "Proxy OK ({ms} ms)",
+    "proxy_test_failed": "Falló la prueba del proxy",
+    "proxy_host_required": "Introduce el host del proxy",
+    "proxy_port_invalid": "El puerto debe estar entre 1 y 65535",
     "open_config_directory": "Abrir carpeta de configuración",
     "directory_format": {
       "name": "Formato de carpeta",

@@ -57,6 +57,13 @@
     "proxy_username": "Username",
     "proxy_password": "Password",
     "proxy_credentials_tip": "Optional. Credentials are stored unencrypted in config.json",
+    "save_config": "Save",
+    "save_config_failed": "Failed to save the configuration",
+    "test_proxy": "Test Connection",
+    "proxy_test_success": "Proxy OK ({ms} ms)",
+    "proxy_test_failed": "Proxy test failed",
+    "proxy_host_required": "Please enter the proxy host",
+    "proxy_port_invalid": "The port must be between 1 and 65535",
     "open_config_directory": "Open Config Folder",
     "directory_format": {
       "name": "Folder Format",
