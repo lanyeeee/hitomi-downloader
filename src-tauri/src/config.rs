@@ -1,10 +1,11 @@
 use std::path::{Path, PathBuf};
 
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri::{AppHandle, Manager};
 
-use crate::types::{DownloadFormat, ProxyMode};
+use crate::types::{DownloadFormat, ProxyMode, ProxyProtocol};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -17,6 +18,12 @@ pub struct Config {
     pub proxy_host: String,
     pub proxy_mode: ProxyMode,
     pub proxy_port: u16,
+    #[serde(default)]
+    pub proxy_protocol: ProxyProtocol,
+    #[serde(default)]
+    pub proxy_username: String,
+    #[serde(default)]
+    pub proxy_password: String,
 }
 
 impl Config {
@@ -39,6 +46,32 @@ impl Config {
         };
         config.save(app)?;
         Ok(config)
+    }
+
+    /// Build the URL of the custom proxy without credentials, e.g. `http://127.0.0.1:7890` or `socks5h://127.0.0.1:7890`
+    pub fn custom_proxy_endpoint(&self) -> String {
+        format!(
+            "{}://{}:{}",
+            self.proxy_protocol.scheme(),
+            self.proxy_host.trim(),
+            self.proxy_port
+        )
+    }
+
+    /// Build the URL of the custom proxy, including the percent-encoded credentials when a
+    /// username is set, e.g. `socks5://user:pass@127.0.0.1:7890`.
+    /// Never log this value, it may contain the proxy password.
+    pub fn custom_proxy_url(&self) -> String {
+        let endpoint = self.custom_proxy_endpoint();
+        let username = self.proxy_username.trim();
+        if username.is_empty() {
+            return endpoint;
+        }
+        let username = utf8_percent_encode(username, NON_ALPHANUMERIC);
+        let password = utf8_percent_encode(&self.proxy_password, NON_ALPHANUMERIC);
+        // Replace `scheme://` with `scheme://username:password@`
+        let (scheme, host_and_port) = endpoint.split_once("://").unwrap_or_default();
+        format!("{scheme}://{username}:{password}@{host_and_port}")
     }
 
     pub fn save(&self, app: &AppHandle) -> anyhow::Result<()> {
@@ -81,6 +114,47 @@ impl Config {
             proxy_mode: ProxyMode::System,
             proxy_host: "127.0.0.1".to_string(),
             proxy_port: 7890,
+            proxy_protocol: ProxyProtocol::Http,
+            proxy_username: String::new(),
+            proxy_password: String::new(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn custom_proxy_config(username: &str, password: &str) -> Config {
+        Config {
+            download_dir: PathBuf::from("/tmp/download"),
+            export_dir: PathBuf::from("/tmp/export"),
+            enable_file_logger: false,
+            download_format: DownloadFormat::Webp,
+            dir_fmt: String::new(),
+            proxy_host: " 127.0.0.1 ".to_string(),
+            proxy_mode: ProxyMode::Custom,
+            proxy_port: 7890,
+            proxy_protocol: ProxyProtocol::Socks5h,
+            proxy_username: username.to_string(),
+            proxy_password: password.to_string(),
+        }
+    }
+
+    #[test]
+    fn custom_proxy_url_without_credentials() {
+        let config = custom_proxy_config("", "");
+        assert_eq!(config.custom_proxy_url(), "socks5h://127.0.0.1:7890");
+        assert_eq!(config.custom_proxy_endpoint(), "socks5h://127.0.0.1:7890");
+    }
+
+    #[test]
+    fn custom_proxy_url_with_credentials() {
+        let config = custom_proxy_config("user", "p@ss:w/rd%");
+        assert_eq!(
+            config.custom_proxy_url(),
+            "socks5h://user:p%40ss%3Aw%2Frd%25@127.0.0.1:7890"
+        );
+        assert!(reqwest::Proxy::all(config.custom_proxy_url()).is_ok());
     }
 }
