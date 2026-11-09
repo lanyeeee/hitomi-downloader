@@ -131,14 +131,14 @@ async function showDownloadDirInFileManager() {
 </script>
 
 <template>
-  <div v-if="store.config !== undefined" class="flex flex-col gap-2">
+  <div v-if="store.config !== undefined" class="h-full min-h-0 flex flex-col gap-2">
     <div class="flex gap-1 box-border px-2 pt-2">
       <n-input-group>
         <n-input-group-label size="small">
           {{ t('common.download_directory') }}
         </n-input-group-label>
         <n-input v-model:value="store.config.downloadDir" size="small" readonly @click="selectDownloadDir" />
-        <n-button class="w-9" size="small" @click="showDownloadDirInFileManager">
+        <n-button class="w-9 shrink-0" size="small" @click="showDownloadDirInFileManager">
           <template #icon>
             <n-icon size="20">
               <PhFolderOpen />
@@ -148,16 +148,16 @@ async function showDownloadDirInFileManager() {
       </n-input-group>
     </div>
 
-    <n-tabs class="h-full overflow-auto" type="line" size="small" animated>
-      <n-tab-pane class="h-full p-0! overflow-auto" name="uncompleted" :tab="t('uncompleted_progresses.name')">
+    <n-tabs class="flex-1 min-h-0 overflow-hidden" type="line" size="small" animated>
+      <n-tab-pane class="h-full p-0! overflow-hidden" name="uncompleted" :tab="t('uncompleted_progresses.name')">
         <uncompleted-progresses />
       </n-tab-pane>
-      <n-tab-pane class="h-full p-0! overflow-auto" name="completed" :tab="t('completed_progresses.name')">
+      <n-tab-pane class="h-full p-0! overflow-hidden" name="completed" :tab="t('completed_progresses.name')">
         <completed-progresses :search="search" />
       </n-tab-pane>
     </n-tabs>
 
-    <div class="flex items-center justify-between">
+    <div class="mt-auto flex items-center justify-between px-2 pb-1 text-sm opacity-80">
       <span>{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
     </div>
   </div>

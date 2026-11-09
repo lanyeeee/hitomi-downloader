@@ -224,38 +224,39 @@ function stateToColorClass(state: DownloadTaskState) {
 <template>
   <SelectionArea
     ref="selectionAreaRef"
-    class="h-full flex flex-col selection-container box-border px-2"
+    class="h-full min-h-0 flex flex-col selection-container box-border px-2"
     :options="{ selectables: '.selectable', features: { deselectOnBlur: true } }"
     @contextmenu="showDropdown"
     @move="updateSelectedIds"
     @start="unselectAll">
-    <span class="ml-auto select-none">{{ t('uncompleted_progresses.usage_tips') }}</span>
-    <div class="h-full select-none">
+    <span class="ml-auto px-1 py-1 text-xs opacity-60 select-none">{{ t('uncompleted_progresses.usage_tips') }}</span>
+    <div class="flex flex-col gap-2 pb-2 select-none">
       <div
         v-for="[comicId, { state, comic, percentage, indicator }] in uncompletedProgresses"
         :key="comicId"
         ref="selectableRefs"
         :data-key="comicId"
         :class="[
-          'selectable p-3 m-1 mb-2 rounded-lg transition-colors duration-200',
+          'selectable p-3 rounded-lg transition-colors duration-200',
           'bg-white hover:bg-gray-100 dark:bg-[#272d3d] dark:hover:bg-[#343b4f]',
           selectedIds.has(comicId) ? '!bg-[#3a415a] dark:!bg-[#3a415a] shadow-md' : '',
         ]"
         @dblclick="() => onProgressDoubleClick(state, comicId)"
         @contextmenu="() => onProgressContextMenu(comicId)">
-        <div class="flex items-center" :title="comic.title">
-          <div class="text-ellipsis whitespace-nowrap overflow-hidden text-gray-800 dark:text-white">
+        <div class="flex items-center min-w-0" :title="comic.title">
+          <div class="flex-1 min-w-0 text-ellipsis whitespace-nowrap overflow-hidden text-gray-800 dark:text-white">
             {{ comic.title }}
           </div>
         </div>
-        <div class="flex items-center" :title="comic.title">
-          <n-icon :class="[stateToColorClass(state), 'mr-2']" :size="22">
+        <div class="flex items-center min-w-0 mt-1" :title="comic.title">
+          <n-icon :class="[stateToColorClass(state), 'mr-2 shrink-0']" :size="22">
             <PhCloudArrowDown v-if="state === 'Downloading'" />
             <PhClock v-else-if="state === 'Pending'" />
             <PhPause v-else-if="state === 'Paused'" />
             <PhWarningCircle v-else-if="state === 'Failed'" />
           </n-icon>
           <n-progress
+            class="flex-1 min-w-0"
             :class="stateToColorClass(state)"
             :status="stateToStatus(state)"
             :percentage="percentage"

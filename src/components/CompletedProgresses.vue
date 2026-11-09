@@ -20,11 +20,11 @@ const completedProgresses = computed<[number, ProgressData][]>(() =>
 </script>
 
 <template>
-  <div class="h-full flex flex-col overflow-auto px-2 gap-2">
+  <div class="h-full min-h-0 flex flex-col gap-2 overflow-auto px-2 pb-2">
     <downloaded-comic-card
       v-for="[comicId, progressData] in completedProgresses"
       :key="comicId"
       :search="search"
-      v-model:comic="progressData.comic" />
+      :comic="progressData.comic" />
   </div>
 </template>
