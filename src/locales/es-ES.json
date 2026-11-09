@@ -92,6 +92,21 @@
     "comic_id_invalid": "Formato de ID de cómic inválido",
     "enter_comic_id_or_url": "Por favor introduce el ID del cómic o la URL"
   },
+  "bulk_download": {
+    "name": "Descargar resultados",
+    "filter_placeholder": "Filtrar por título, autor o etiqueta...",
+    "collecting_page": "Cargando página {current}/{total}...",
+    "collect_failed": "No se pudieron recolectar los resultados",
+    "selected_count": "{selected} de {total} seleccionados",
+    "download_button": "Descargar ({count})",
+    "downloading_item": "Descargando {current}/{total}: {title}",
+    "finished": "Descarga finalizada. Completados: {completed}, fallidos: {failed}",
+    "queue_cancelled": "Cola cancelada, las descargas restantes no se iniciaron",
+    "cancel_queue": "Cancelar cola",
+    "close": "Cerrar",
+    "empty": "No hay resultados para descargar",
+    "no_match": "No hay resultados que coincidan con el filtro"
+  },
   "downloaded_pane": {
     "name": "Local",
     "empty_description": "Descarga cómics primero",

@@ -87,6 +87,21 @@
     "comic_id_invalid": "漫画ID格式错误",
     "enter_comic_id_or_url": "请输入漫画ID或链接"
   },
+  "bulk_download": {
+    "name": "下载结果",
+    "filter_placeholder": "按标题、作者或标签筛选...",
+    "collecting_page": "正在加载第 {current}/{total} 页...",
+    "collect_failed": "收集结果失败",
+    "selected_count": "已选择 {selected}/{total}",
+    "download_button": "下载（{count}）",
+    "downloading_item": "正在下载 {current}/{total}：{title}",
+    "finished": "下载完成。成功：{completed}，失败：{failed}",
+    "queue_cancelled": "队列已取消，剩余下载未开始",
+    "cancel_queue": "取消队列",
+    "close": "关闭",
+    "empty": "没有可下载的结果",
+    "no_match": "没有符合筛选条件的结果"
+  },
   "downloaded_pane": {
     "name": "本地库存",
     "empty_description": "请先下载漫画",
