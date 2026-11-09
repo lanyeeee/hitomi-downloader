@@ -43,6 +43,17 @@ const localeOptions = Object.entries(locales).map(([key, value]) => ({
 
 const searchPaneRef = ref<InstanceType<typeof SearchPane>>()
 
+const activeDownloads = computed(() => {
+  let count = 0
+  for (const [, data] of store.progresses.entries()) {
+    if (data.state === 'Downloading' || data.state === 'Pending') {
+      count++
+    }
+  }
+  let status = `${count > 0 ? `(${count}) ` : ''}${t('downloading_pane.name')}`
+  return status
+})
+
 watch(
   () => store.config,
   async () => {
@@ -110,10 +121,12 @@ onMounted(async () => {
           <comic-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
         </n-tab-pane>
         <n-tab-pane
-          name="Downloads"
+          name="downloading"
           class="h-full overflow-auto p-0!"
-          :tab="t('downloading_pane.name')"
           display-directive="show">
+          <template #tab>
+            {{ activeDownloads }}
+          </template>
           <downloading-pane
             class="flex-1 overflow-auto pb-3"
             v-if="searchPaneRef !== undefined"
@@ -121,10 +134,11 @@ onMounted(async () => {
         </n-tab-pane>
         <n-tab-pane
           class="h-full overflow-auto p-0!"
-          name="downloaded"
+          name="Downloads"
           :tab="t('downloaded_pane.name')"
-          display-directive="show">
-          <downloaded-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
+          display-directive="show">          
+            <downloaded-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
+          
         </n-tab-pane>
         <n-tab-pane
           name="Settings"

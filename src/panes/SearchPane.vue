@@ -364,7 +364,9 @@ defineExpose({ search })
       v-if="store.searchResult !== undefined"
       ref="comicCardContainerRef"
       class="flex flex-col gap-row-2 overflow-auto box-border px-2">
-      <comic-card v-for="comic in filteredComics" :key="comic.id" :search="search" :comic="comic" />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 min-w-0">
+        <comic-card v-for="comic in filteredComics" :key="comic.id" :search="search" :comic="comic" />
+      </div>
     </div>
 
     <n-pagination

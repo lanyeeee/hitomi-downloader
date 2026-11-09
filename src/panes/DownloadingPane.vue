@@ -157,7 +157,9 @@ async function showDownloadDirInFileManager() {
       </n-tab-pane>
     </n-tabs>
 
-    <span class="ml-auto mr-2">{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
+    <div class="flex items-center justify-between">
+      <span>{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
+    </div>
   </div>
 </template>
 
