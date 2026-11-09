@@ -205,22 +205,22 @@ trait ClientBuilderExt {
 
 impl ClientBuilderExt for reqwest::ClientBuilder {
     fn set_proxy(self, app: &AppHandle, client_name: &str) -> reqwest::ClientBuilder {
-        let proxy_mode = app.state::<RwLock<Config>>().read().proxy_mode;
-        match proxy_mode {
+        let config = app.state::<RwLock<Config>>();
+        let config = config.read();
+        match config.proxy_mode {
             ProxyMode::System => self,
             ProxyMode::NoProxy => self.no_proxy(),
             ProxyMode::Custom => {
-                let config = app.state::<RwLock<Config>>();
-                let config = config.read();
-                let proxy_host = &config.proxy_host;
-                let proxy_port = &config.proxy_port;
-                let proxy_url = format!("http://{proxy_host}:{proxy_port}");
+                let proxy_url = config.custom_proxy_url();
 
                 match reqwest::Proxy::all(&proxy_url).map_err(anyhow::Error::from) {
                     Ok(proxy) => self.proxy(proxy),
                     Err(err) => {
-                        let err_title =
-                            format!("{client_name} failed to set proxy `{proxy_url}`, use system proxy instead");
+                        // `proxy_url` may contain the password, only the endpoint is logged
+                        let err_title = format!(
+                            "{client_name} failed to set proxy `{}`, use system proxy instead",
+                            config.custom_proxy_endpoint()
+                        );
                         let string_chain = err.to_string_chain();
                         tracing::error!(err_title, message = string_chain);
                         self

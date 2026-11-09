@@ -48,6 +48,9 @@ pub fn save_config(
         config_state.proxy_mode != config.proxy_mode
             || config_state.proxy_host != config.proxy_host
             || config_state.proxy_port != config.proxy_port
+            || config_state.proxy_protocol != config.proxy_protocol
+            || config_state.proxy_username != config.proxy_username
+            || config_state.proxy_password != config.proxy_password
     };
 
     let enable_file_logger = config.enable_file_logger;
