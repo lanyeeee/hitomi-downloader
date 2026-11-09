@@ -186,6 +186,9 @@ export type Config = {
   proxyHost: string
   proxyMode: ProxyMode
   proxyPort: number
+  proxyProtocol: ProxyProtocol
+  proxyUsername: string
+  proxyPassword: string
 }
 export type DownloadFormat = 'Webp' | 'Avif'
 export type DownloadSpeedEvent = { speed: string }
@@ -228,6 +231,7 @@ export type LogEvent = {
 }
 export type LogLevel = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR'
 export type ProxyMode = 'System' | 'NoProxy' | 'Custom'
+export type ProxyProtocol = 'Http' | 'Socks5' | 'Socks5h'
 export type SearchResult = { comics: Comic[]; currentPage: number; totalPage: number; ids: number[] }
 export type Suggestion = { s: string; t: number; u: string; n: string }
 export type Tag = { tag: string; female: number; male: number }
