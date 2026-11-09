@@ -95,45 +95,48 @@ onMounted(async () => {
 
 <template>
   <div v-if="store.config !== undefined" class="h-screen flex flex-col">
-    <div class="flex flex-1 overflow-hidden p-2">
+    <div class="relative flex flex-1 overflow-hidden p-2">
       <n-tabs class="h-full" v-model:value="store.currentTabName" type="line" size="small" animated>
         <n-tab-pane
-          class="h-full overflow-auto p-0!"
+          class="h-full overflow-hidden p-0!"
           name="search"
           :tab="t('search_pane.name')"
           display-directive="show">
           <searchPane ref="searchPaneRef" />
         </n-tab-pane>
-        <n-tab-pane class="h-full overflow-auto p-0!" name="comic" :tab="t('comic_pane.name')" display-directive="show">
+        <n-tab-pane
+          class="h-full overflow-hidden p-0!"
+          name="comic"
+          :tab="t('comic_pane.name')"
+          display-directive="show">
           <comic-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
         </n-tab-pane>
         <n-tab-pane
           name="downloading"
-          class="h-full overflow-auto p-0!"
+          class="h-full overflow-hidden p-0!"
           display-directive="show">
           <template #tab>
             {{ activeDownloads }}
           </template>
           <downloading-pane
-            class="flex-1 overflow-auto pb-3"
+            class="h-full overflow-hidden"
             v-if="searchPaneRef !== undefined"
             :search="searchPaneRef.search" />
         </n-tab-pane>
         <n-tab-pane
-          class="h-full overflow-auto p-0!"
-          name="Downloads"
+          class="h-full overflow-hidden p-0!"
+          name="downloaded"
           :tab="t('downloaded_pane.name')"
-          display-directive="show">          
-            <downloaded-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
-          
+          display-directive="show">
+          <downloaded-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
         </n-tab-pane>
         <n-tab-pane
-          name="Settings"
+          name="settings"
           class="h-full overflow-auto p-0!"
           :tab="t('settings_dialog.name')"
           display-directive="show">
-          <div class="container p-3">
-            <div class="my-2 flex items-center gap-2">
+          <div class="mx-auto w-full max-w-4xl box-border p-3">
+            <div class="my-2 flex flex-wrap items-center gap-2">
               <n-button @click="logViewerShowing = true">
                 <template #icon>
                   <n-icon size="22">
@@ -160,18 +163,20 @@ onMounted(async () => {
           </div>
         </n-tab-pane>
       </n-tabs>
-      <div class="fixed bottom-4 right-4 z-50">
-        <n-button @click="toggleTheme" :title="themeLabel" class="px-2 md:px-3 shadow-lg">
-          <template #icon>
-            <n-icon size="22" class="flex items-center justify-center">
-              <PhSun v-if="store.theme === 'light'" />
-              <PhMoon v-else-if="store.theme === 'dark'" />
-              <PhMonitor v-else />
-            </n-icon>
-          </template>
-          <span class="hidden md:inline ml-1">{{ themeLabel }}</span>
-        </n-button>
-      </div>
+      <n-button
+        size="small"
+        @click="toggleTheme"
+        :title="themeLabel"
+        class="absolute right-4 top-3 z-10 shadow-md">
+        <template #icon>
+          <n-icon size="20" class="flex items-center justify-center">
+            <PhSun v-if="store.theme === 'light'" />
+            <PhMoon v-else-if="store.theme === 'dark'" />
+            <PhMonitor v-else />
+          </n-icon>
+        </template>
+        <span class="hidden md:inline ml-1">{{ themeLabel }}</span>
+      </n-button>
     </div>
 
     <log-viewer v-model:showing="logViewerShowing" />
@@ -188,6 +193,6 @@ onMounted(async () => {
 }
 
 :deep(.n-tabs-nav) {
-  @apply px-2;
+  @apply px-2 pr-16 md:pr-32;
 }
 </style>

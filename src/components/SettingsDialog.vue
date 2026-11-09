@@ -93,7 +93,7 @@ async function showConfigInFileManager() {
 
 <template>
   <div class="flex flex-col gap-row-2">
-    <n-radio-group class="flex gap-2" v-model:value="store.config.downloadFormat">
+    <n-radio-group class="flex flex-wrap items-center gap-x-4 gap-y-1" v-model:value="store.config.downloadFormat">
       <span>{{ t('settings_dialog.download_format') }}</span>
       <n-radio value="Webp">webp</n-radio>
       <n-tooltip placement="top" trigger="hover">
@@ -103,13 +103,16 @@ async function showConfigInFileManager() {
         </template>
       </n-tooltip>
     </n-radio-group>
-    <n-radio-group class="flex gap-2" v-model:value="store.config.proxyMode">
+    <n-radio-group class="flex flex-wrap items-center gap-x-4 gap-y-1" v-model:value="store.config.proxyMode">
       {{ t('settings_dialog.proxy_mode') }}
       <n-radio value="System">{{ t('settings_dialog.system_proxy') }}</n-radio>
       <n-radio value="NoProxy">{{ t('settings_dialog.no_proxy') }}</n-radio>
       <n-radio value="Custom">{{ t('settings_dialog.custom_proxy') }}</n-radio>
     </n-radio-group>
-    <n-radio-group class="flex gap-2" :disabled="disableProxyHostAndPort" v-model:value="store.config.proxyProtocol">
+    <n-radio-group
+      class="flex flex-wrap items-center gap-x-4 gap-y-1"
+      :disabled="disableProxyHostAndPort"
+      v-model:value="store.config.proxyProtocol">
       {{ t('settings_dialog.proxy_protocol') }}
       <n-radio value="Http">HTTP</n-radio>
       <n-tooltip placement="top" trigger="hover">
@@ -140,22 +143,26 @@ async function showConfigInFileManager() {
         placeholder=""
         :parse="(x: string) => parseInt(x)" />
     </n-input-group>
-    <n-input-group>
-      <n-input-group-label size="small">{{ t('settings_dialog.proxy_username') }}</n-input-group-label>
-      <n-input
-        :disabled="disableProxyHostAndPort"
-        v-model:value="proxyUsername"
-        size="small"
-        placeholder="" />
-      <n-input-group-label size="small">{{ t('settings_dialog.proxy_password') }}</n-input-group-label>
-      <n-input
-        :disabled="disableProxyHostAndPort"
-        v-model:value="proxyPassword"
-        size="small"
-        type="password"
-        show-password-on="click"
-        placeholder="" />
-    </n-input-group>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <n-input-group>
+        <n-input-group-label size="small">{{ t('settings_dialog.proxy_username') }}</n-input-group-label>
+        <n-input
+          :disabled="disableProxyHostAndPort"
+          v-model:value="proxyUsername"
+          size="small"
+          placeholder="" />
+      </n-input-group>
+      <n-input-group>
+        <n-input-group-label size="small">{{ t('settings_dialog.proxy_password') }}</n-input-group-label>
+        <n-input
+          :disabled="disableProxyHostAndPort"
+          v-model:value="proxyPassword"
+          size="small"
+          type="password"
+          show-password-on="click"
+          placeholder="" />
+      </n-input-group>
+    </div>
     <p class="m-0 text-xs opacity-60">{{ t('settings_dialog.proxy_credentials_tip') }}</p>
     <n-tooltip placement="top" trigger="hover" width="580">
       <i18n-t keypath="settings_dialog.directory_format.directory_level_tips" tag="div" scope="global">
@@ -195,7 +202,7 @@ async function showConfigInFileManager() {
         {type}/{artists}/[{artists}] {title}({id}) - {language}({language_localname})
       </div>
       <div class="font-semibold">{{ t('settings_dialog.directory_format.directory_result') }}</div>
-      <div class="flex gap-1 text-black">
+      <div class="flex flex-wrap items-center gap-1 text-black">
         <div class="bg-gray-200 rounded-md px-2 w-fit">doujinshi</div>
         <span class="rounded bg-gray-500 px-1 text-white">/</span>
         <div class="bg-gray-200 rounded-md px-2 w-fit">mameroku</div>
@@ -211,7 +218,7 @@ async function showConfigInFileManager() {
         </n-input-group>
       </template>
     </n-tooltip>
-    <div class="mt-2 flex items-center justify-end gap-2">
+    <div class="mt-2 flex flex-wrap items-center justify-end gap-2">
       <n-button class="mr-auto" size="small" @click="showConfigInFileManager">
         {{ t('settings_dialog.open_config_directory') }}
       </n-button>
