@@ -156,5 +156,62 @@ mod tests {
             "socks5h://user:p%40ss%3Aw%2Frd%25@127.0.0.1:7890"
         );
         assert!(reqwest::Proxy::all(config.custom_proxy_url()).is_ok());
+        assert_eq!(config.custom_proxy_endpoint(), "socks5h://127.0.0.1:7890");
+    }
+
+    #[test]
+    fn custom_proxy_url_encodes_username() {
+        let config = custom_proxy_config("us er@dom", "secret");
+        assert_eq!(
+            config.custom_proxy_url(),
+            "socks5h://us%20er%40dom:secret@127.0.0.1:7890"
+        );
+        assert!(reqwest::Proxy::all(config.custom_proxy_url()).is_ok());
+    }
+
+    #[test]
+    fn custom_proxy_url_with_empty_password() {
+        let config = custom_proxy_config("user", "");
+        assert_eq!(config.custom_proxy_url(), "socks5h://user:@127.0.0.1:7890");
+        assert!(reqwest::Proxy::all(config.custom_proxy_url()).is_ok());
+    }
+
+    #[test]
+    fn proxy_protocol_schemes() {
+        assert_eq!(ProxyProtocol::Http.scheme(), "http");
+        assert_eq!(ProxyProtocol::Socks5.scheme(), "socks5");
+        assert_eq!(ProxyProtocol::Socks5h.scheme(), "socks5h");
+    }
+
+    #[test]
+    fn custom_proxy_url_for_each_protocol() {
+        for (protocol, expected) in [
+            (ProxyProtocol::Http, "http://127.0.0.1:7890"),
+            (ProxyProtocol::Socks5, "socks5://127.0.0.1:7890"),
+            (ProxyProtocol::Socks5h, "socks5h://127.0.0.1:7890"),
+        ] {
+            let mut config = custom_proxy_config("", "");
+            config.proxy_protocol = protocol;
+            assert_eq!(config.custom_proxy_url(), expected);
+            assert!(reqwest::Proxy::all(config.custom_proxy_url()).is_ok());
+        }
+    }
+
+    #[test]
+    fn legacy_config_without_proxy_fields_uses_defaults() {
+        let json = serde_json::json!({
+            "downloadDir": "/tmp/download",
+            "exportDir": "/tmp/export",
+            "enableFileLogger": true,
+            "downloadFormat": "Webp",
+            "dirFmt": "{title} - {id}",
+            "proxyMode": "System",
+            "proxyHost": "127.0.0.1",
+            "proxyPort": 7890,
+        });
+        let config: Config = serde_json::from_value(json).unwrap();
+        assert_eq!(config.proxy_protocol, ProxyProtocol::Http);
+        assert!(config.proxy_username.is_empty());
+        assert!(config.proxy_password.is_empty());
     }
 }
