@@ -1,11 +1,12 @@
 <script setup lang="tsx">
 import { computed, nextTick, ref, watch } from 'vue'
-import { commands, Suggestion } from '../bindings.ts'
+import { Comic, commands, Suggestion } from '../bindings.ts'
 import { SelectOption, useMessage, useNotification } from 'naive-ui'
 import ComicCard from '../components/ComicCard.vue'
+import BulkDownloadDialog from '../components/BulkDownloadDialog.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { PhMagnifyingGlass, PhArrowRight, PhFunnel } from '@phosphor-icons/vue'
+import { PhMagnifyingGlass, PhArrowRight, PhFunnel, PhDownloadSimple } from '@phosphor-icons/vue'
 import FloatLabelInput from '../components/FloatLabelInput.vue'
 
 const { t } = useI18n()
@@ -67,6 +68,34 @@ function clearPageFilter() {
   pageFilter.value = null
   pageFilterApplied.value = false
 }
+
+interface BulkSource {
+  ids: number[]
+  totalPage: number
+  cachedPage: number
+  cachedComics: Comic[]
+  pageFilter: PageFilter | null
+}
+
+const bulkDialogShowing = ref<boolean>(false)
+const bulkSource = ref<BulkSource>()
+
+function openBulkDownloadDialog() {
+  const result = store.searchResult
+  if (result === undefined || result.comics.length === 0) {
+    return
+  }
+  // Snapshot the current result so later searches or page changes do not affect the dialog
+  bulkSource.value = {
+    ids: result.ids,
+    totalPage: result.totalPage,
+    cachedPage: result.currentPage,
+    cachedComics: result.comics,
+    pageFilter: pageFilterApplied.value ? pageFilter.value : null,
+  }
+  bulkDialogShowing.value = true
+}
+
 const {
   onSuggestionSelect,
   getSearchSuggestions,
@@ -369,11 +398,33 @@ defineExpose({ search })
       </div>
     </div>
 
-    <n-pagination
-      v-if="store.searchResult !== undefined"
-      class="box-border p-2 pt-0 mt-auto"
-      :page-count="store.searchResult.totalPage"
-      :page="currentPage"
-      @update:page="handlePageChange" />
+    <div v-if="store.searchResult !== undefined" class="flex items-center gap-2 box-border p-2 pt-0 mt-auto">
+      <n-button
+        size="small"
+        type="primary"
+        :disabled="store.searchResult.comics.length === 0"
+        @click="openBulkDownloadDialog">
+        <template #icon>
+          <n-icon size="20">
+            <PhDownloadSimple />
+          </n-icon>
+        </template>
+        {{ t('bulk_download.name') }}
+      </n-button>
+      <n-pagination
+        class="ml-auto"
+        :page-count="store.searchResult.totalPage"
+        :page="currentPage"
+        @update:page="handlePageChange" />
+    </div>
+
+    <bulk-download-dialog
+      v-if="bulkSource !== undefined"
+      v-model:showing="bulkDialogShowing"
+      :ids="bulkSource.ids"
+      :total-page="bulkSource.totalPage"
+      :cached-page="bulkSource.cachedPage"
+      :cached-comics="bulkSource.cachedComics"
+      :page-filter="bulkSource.pageFilter" />
   </div>
 </template>
