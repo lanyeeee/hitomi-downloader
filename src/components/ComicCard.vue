@@ -97,7 +97,7 @@ async function showComicDownloadDirInFileManager() {
       </div>
 
       <!-- Contenido principal -->
-      <div class="flex flex-col w-full overflow-hidden gap-1.5 min-w-0">
+      <div class="flex flex-1 flex-col overflow-hidden gap-1.5 min-w-0">
         <!-- Título -->
         <div
           class="font-bold text-lg leading-snug line-clamp-2 cursor-pointer transition-colors duration-200 text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-[#6c7ec6]"
@@ -107,16 +107,16 @@ async function showComicDownloadDirInFileManager() {
         <!-- Metadatos estructurados con truncado responsive -->
         <div class="flex flex-col gap-1 text-xs text-gray-500 dark:text-[#a7acb9] min-w-0">
           <!-- Artistas -->
-          <div v-if="comic.artists?.length" class="flex items-center gap-1.5 overflow-hidden">
+          <div v-if="comic.artists?.length" class="flex items-start gap-1.5">
             <span class="font-semibold text-gray-700 dark:text-white whitespace-nowrap flex-shrink-0">
               {{ t('common.artist') }}:
             </span>
-            <div class="flex items-center gap-1.5 overflow-hidden md:overflow-visible">
+            <div class="flex flex-wrap items-center gap-1.5 min-w-0">
               <n-button
                 v-for="(artist, index) in comic.artists"
                 :key="index"
                 size="tiny"
-                class="border-gray-200 dark:border-[#3b3f4d] truncate max-w-[150px] md:max-w-none"
+                class="border-gray-200 dark:border-[#3b3f4d] max-w-[12rem]"
                 @click.stop="search(`artist:${artist.replace(' ', '_')}`, 1)">
                 <span class="truncate">{{ artist }}</span>
               </n-button>
@@ -124,16 +124,16 @@ async function showComicDownloadDirInFileManager() {
           </div>
 
           <!-- Series -->
-          <div v-if="comic.parodys?.length" class="flex items-center gap-1.5 overflow-hidden">
+          <div v-if="comic.parodys?.length" class="flex items-start gap-1.5">
             <span class="font-semibold text-gray-700 dark:text-white whitespace-nowrap flex-shrink-0">
               {{ t('common.series') }}:
             </span>
-            <div class="flex items-center gap-1.5 overflow-hidden md:overflow-visible">
+            <div class="flex flex-wrap items-center gap-1.5 min-w-0">
               <n-button
                 v-for="(series, index) in comic.parodys"
                 :key="index"
                 size="tiny"
-                class="border-gray-200 dark:border-[#3b3f4d] truncate max-w-[150px] md:max-w-none"
+                class="border-gray-200 dark:border-[#3b3f4d] max-w-[12rem]"
                 @click.stop="search(`series:${series.replace(' ', '_')}`, 1)">
                 <span class="truncate">{{ series }}</span>
               </n-button>
@@ -164,17 +164,17 @@ async function showComicDownloadDirInFileManager() {
             </div>
           </div>
 
-          <!-- Etiquetas (Tags) con truncado estricto en móvil -->
-          <div v-if="comic.tags?.length" class="flex items-center gap-1 mt-0.5 overflow-hidden">
+          <!-- Etiquetas (Tags) -->
+          <div v-if="comic.tags?.length" class="flex items-start gap-1 mt-0.5">
             <span class="font-semibold text-gray-700 dark:text-white whitespace-nowrap flex-shrink-0">
               {{ t('common.tag') }}:
             </span>
-            <div class="flex items-center gap-1 overflow-hidden md:flex-wrap md:overflow-visible">
+            <div class="flex flex-wrap items-center gap-1 min-w-0">
               <n-button
                 v-for="({ tag, female, male }, index) in comic.tags"
                 :key="index"
                 size="tiny"
-                class="border-gray-200 dark:border-[#3b3f4d] text-[11px] truncate max-w-[120px] md:max-w-none"
+                class="border-gray-200 dark:border-[#3b3f4d] text-[11px] max-w-[12rem]"
                 @click.stop="
                   search(`${female !== 0 ? 'female' : male !== 0 ? 'male' : 'tag'}:${tag.replace(' ', '_')}`, 1)
                 ">
@@ -186,17 +186,17 @@ async function showComicDownloadDirInFileManager() {
 
         <!-- Pie de tarjeta -->
         <div
-          class="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-auto pt-2 gap-2 border-t border-gray-200 dark:border-[#3b3f4d]/50 text-xs text-gray-400 dark:text-[#7c818e]">
-          <div class="flex items-center gap-3">
-            <span class="px-2 py-0.5 rounded bg-gray-100 dark:bg-transparent text-gray-800 dark:text-white font-mono">
+          class="flex flex-wrap items-center justify-between mt-auto pt-2 gap-2 border-t border-gray-200 dark:border-[#3b3f4d]/50 text-xs text-gray-400 dark:text-[#7c818e]">
+          <div class="flex shrink-0 items-center gap-3">
+            <span class="px-2 py-0.5 rounded bg-gray-100 dark:bg-transparent text-gray-800 dark:text-white font-mono whitespace-nowrap">
               {{ formattedDate }}
             </span>
-            <span class="px-2 py-0.5 rounded bg-gray-100 dark:bg-transparent text-gray-800 dark:text-white font-mono">
-              {{ comic.files.length }} Pages
+            <span class="px-2 py-0.5 rounded bg-gray-100 dark:bg-transparent text-gray-800 dark:text-white font-mono whitespace-nowrap">
+              {{ comic.files.length }} {{ t('search_pane.pages') }}
             </span>
           </div>
 
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div class="flex flex-wrap items-center gap-2 ml-auto justify-end">
             <n-button
               v-if="comic.isDownloaded === true"
               size="small"

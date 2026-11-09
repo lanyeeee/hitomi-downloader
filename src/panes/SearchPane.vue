@@ -267,6 +267,10 @@ function useSuggestion() {
       console.error(result.error)
       return
     }
+    // A search started while the suggestion request was in flight
+    if (searching.value) {
+      return
+    }
 
     suggestions.value = result.data
     suggestionsShowing.value = true
@@ -306,7 +310,7 @@ defineExpose({ search })
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-2">
+  <div class="h-full min-h-0 flex flex-col gap-2">
     <n-input-group class="box-border px-2 pt-2">
       <FloatLabelInput
         :label="t('search_pane.search_by_query')"
@@ -325,7 +329,7 @@ defineExpose({ search })
         :options="suggestionOptions"
         @select="onSuggestionSelect"
         @clickoutside="() => (suggestionsShowing = false)" />
-      <n-button :loading="searching" type="primary" class="w-15%" size="small" @click="search(searchInput.trim(), 1)">
+      <n-button :loading="searching" type="primary" class="w-11 shrink-0" size="small" @click="search(searchInput.trim(), 1)">
         <template #icon>
           <n-icon size="22">
             <PhMagnifyingGlass />
@@ -342,7 +346,7 @@ defineExpose({ search })
         v-model:value="comicIdInput"
         clearable
         @keydown.enter="pickComic" />
-      <n-button type="primary" class="w-15%" size="small" @click="pickComic">
+      <n-button type="primary" class="w-11 shrink-0" size="small" @click="pickComic">
         <template #icon>
           <n-icon size="22">
             <PhArrowRight />
@@ -361,7 +365,7 @@ defineExpose({ search })
         @keydown.enter="applyPageFilter" />
       <n-button
         type="primary"
-        class="w-15%"
+        class="shrink-0"
         :disabled="!(store.searchResult?.comics.length ?? 0)"
         size="small"
         @click="applyPageFilter">
@@ -376,7 +380,7 @@ defineExpose({ search })
       <n-button
         v-if="pageFilterApplied"
         type="primary"
-        class="w-15%"
+        class="shrink-0"
         :disabled="!(store.searchResult?.comics.length ?? 0)"
         size="small"
         @click="clearPageFilter">
@@ -392,13 +396,18 @@ defineExpose({ search })
     <div
       v-if="store.searchResult !== undefined"
       ref="comicCardContainerRef"
-      class="flex flex-col gap-row-2 overflow-auto box-border px-2">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 min-w-0">
+      class="flex-1 min-h-0 flex flex-col overflow-auto box-border px-2">
+      <div v-if="filteredComics.length === 0" class="flex flex-1 items-center justify-center">
+        <n-empty :description="t('search_pane.no_results')" />
+      </div>
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 min-w-0">
         <comic-card v-for="comic in filteredComics" :key="comic.id" :search="search" :comic="comic" />
       </div>
     </div>
 
-    <div v-if="store.searchResult !== undefined" class="flex items-center gap-2 box-border p-2 pt-0 mt-auto">
+    <div
+      v-if="store.searchResult !== undefined"
+      class="flex flex-wrap items-center gap-2 box-border p-2 pt-0 mt-auto">
       <n-button
         size="small"
         type="primary"
@@ -413,6 +422,7 @@ defineExpose({ search })
       </n-button>
       <n-pagination
         class="ml-auto"
+        :page-slot="5"
         :page-count="store.searchResult.totalPage"
         :page="currentPage"
         @update:page="handlePageChange" />

@@ -97,7 +97,8 @@
     "searching_warning": "Search is processing, please try again later",
     "search_success": "Search done",
     "comic_id_invalid": "Invalid Comic ID format",
-    "enter_comic_id_or_url": "Please enter Comic ID or URL"
+    "enter_comic_id_or_url": "Please enter Comic ID or URL",
+    "no_results": "No results found"
   },
   "bulk_download": {
     "name": "Download Results",

@@ -97,7 +97,8 @@
     "searching_warning": "Hay una búsqueda en curso, inténtalo de nuevo más tarde",
     "search_success": "Búsqueda finalizada",
     "comic_id_invalid": "Formato de ID de cómic inválido",
-    "enter_comic_id_or_url": "Por favor introduce el ID del cómic o la URL"
+    "enter_comic_id_or_url": "Por favor introduce el ID del cómic o la URL",
+    "no_results": "No se encontraron resultados"
   },
   "bulk_download": {
     "name": "Descargar resultados",
