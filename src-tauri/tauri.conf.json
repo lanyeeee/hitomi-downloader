@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "hitomi-downloader",
-        "width": 800,
-        "height": 600
+        "width": 1200,
+        "height": 800
       }
     ],
     "security": {
@@ -38,7 +38,8 @@
         "displayLanguageSelector": true,
         "languages": [
           "SimpChinese",
-          "English"
+          "English",
+          "Spanish"
         ]
       }
     }
