@@ -11,9 +11,12 @@ const { t } = useI18n()
 const store = useStore()
 
 const proxyHost = ref<string>(store.config?.proxyHost ?? '')
+const proxyUsername = ref<string>(store.config?.proxyUsername ?? '')
+const proxyPassword = ref<string>(store.config?.proxyPassword ?? '')
 const dirFmt = ref<string>(store.config?.dirFmt ?? '')
 
 const disableProxyHostAndPort = computed(() => store.config?.proxyMode !== 'Custom')
+const proxySchemePrefix = computed(() => `${(store.config?.proxyProtocol ?? 'Http').toLowerCase()}://`)
 
 async function showConfigInFileManager() {
   const configName = 'config.json'
@@ -43,8 +46,24 @@ async function showConfigInFileManager() {
       <n-radio value="NoProxy">{{ t('settings_dialog.no_proxy') }}</n-radio>
       <n-radio value="Custom">{{ t('settings_dialog.custom_proxy') }}</n-radio>
     </n-radio-group>
+    <n-radio-group class="flex gap-2" :disabled="disableProxyHostAndPort" v-model:value="store.config.proxyProtocol">
+      {{ t('settings_dialog.proxy_protocol') }}
+      <n-radio value="Http">HTTP</n-radio>
+      <n-tooltip placement="top" trigger="hover">
+        {{ t('settings_dialog.socks5_tip') }}
+        <template #trigger>
+          <n-radio value="Socks5">SOCKS5</n-radio>
+        </template>
+      </n-tooltip>
+      <n-tooltip placement="top" trigger="hover" width="340">
+        {{ t('settings_dialog.socks5h_tip') }}
+        <template #trigger>
+          <n-radio value="Socks5h">SOCKS5H</n-radio>
+        </template>
+      </n-tooltip>
+    </n-radio-group>
     <n-input-group>
-      <n-input-group-label size="small">http://</n-input-group-label>
+      <n-input-group-label size="small">{{ proxySchemePrefix }}</n-input-group-label>
       <n-input
         :disabled="disableProxyHostAndPort"
         v-model:value="proxyHost"
@@ -60,6 +79,27 @@ async function showConfigInFileManager() {
         placeholder=""
         :parse="(x: string) => parseInt(x)" />
     </n-input-group>
+    <n-input-group>
+      <n-input-group-label size="small">{{ t('settings_dialog.proxy_username') }}</n-input-group-label>
+      <n-input
+        :disabled="disableProxyHostAndPort"
+        v-model:value="proxyUsername"
+        size="small"
+        placeholder=""
+        @blur="store.config.proxyUsername = proxyUsername"
+        @keydown.enter="store.config.proxyUsername = proxyUsername" />
+      <n-input-group-label size="small">{{ t('settings_dialog.proxy_password') }}</n-input-group-label>
+      <n-input
+        :disabled="disableProxyHostAndPort"
+        v-model:value="proxyPassword"
+        size="small"
+        type="password"
+        show-password-on="click"
+        placeholder=""
+        @blur="store.config.proxyPassword = proxyPassword"
+        @keydown.enter="store.config.proxyPassword = proxyPassword" />
+    </n-input-group>
+    <p class="m-0 text-xs opacity-60">{{ t('settings_dialog.proxy_credentials_tip') }}</p>
     <n-tooltip placement="top" trigger="hover" width="580">
       <i18n-t keypath="settings_dialog.directory_format.directory_level_tips" tag="div" scope="global">
         <template v-slot:slash>

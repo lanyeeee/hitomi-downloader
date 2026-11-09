@@ -51,6 +51,12 @@
     "system_proxy": "System",
     "no_proxy": "No Proxy",
     "custom_proxy": "Custom",
+    "proxy_protocol": "Protocol",
+    "socks5_tip": "DNS is resolved locally",
+    "socks5h_tip": "DNS is resolved by the proxy. Use it if DNS resolution is blocked or poisoned",
+    "proxy_username": "Username",
+    "proxy_password": "Password",
+    "proxy_credentials_tip": "Optional. Credentials are stored unencrypted in config.json",
     "open_config_directory": "Open Config Folder",
     "directory_format": {
       "name": "Folder Format",
