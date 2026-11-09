@@ -339,7 +339,7 @@ watch(
             clearable
             :disabled="downloading"
             :placeholder="t('bulk_download.filter_placeholder')" />
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <n-checkbox
               :checked="allVisibleSelected"
               :indeterminate="someVisibleSelected"
@@ -382,7 +382,7 @@ watch(
         </div>
         <div v-else-if="finished" class="text-sm">{{ summary }}</div>
 
-        <div class="flex justify-end gap-2">
+        <div class="flex flex-wrap justify-end gap-2">
           <template v-if="downloading">
             <n-button size="small" @click="cancelQueue">{{ t('bulk_download.cancel_queue') }}</n-button>
           </template>
