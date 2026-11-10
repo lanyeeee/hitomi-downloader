@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AboutDialog: typeof import('./src/components/AboutDialog.vue')['default']
+    BulkDownloadDialog: typeof import('./src/components/BulkDownloadDialog.vue')['default']
     ComicCard: typeof import('./src/components/ComicCard.vue')['default']
     CompletedProgresses: typeof import('./src/components/CompletedProgresses.vue')['default']
     DownloadButton: typeof import('./src/components/DownloadButton.vue')['default']
@@ -38,6 +39,7 @@ declare module 'vue' {
     NRadio: typeof import('naive-ui')['NRadio']
     NRadioGroup: typeof import('naive-ui')['NRadioGroup']
     NSelect: typeof import('naive-ui')['NSelect']
+    NSpin: typeof import('naive-ui')['NSpin']
     NTabPane: typeof import('naive-ui')['NTabPane']
     NTabs: typeof import('naive-ui')['NTabs']
     NTooltip: typeof import('naive-ui')['NTooltip']

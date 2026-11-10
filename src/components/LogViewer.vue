@@ -84,8 +84,8 @@ onMounted(async () => {
     if (level === 'ERROR') {
       notification.error({
         title: () => fields['err_title'] as string,
+        duration: 4000,
         description: () => fields['message'] as string,
-        duration: 0,
       })
     }
   })
@@ -143,15 +143,15 @@ async function showLogsDirInFileManager() {
       :showIcon="false"
       :title="`${t('log_viewer.logs_directory_size')}: ${formatedLogsDirSize}`"
       @close="showing = false"
-      style="width: 95%">
+      style="width: min(1100px, 95vw); max-height: 90vh">
       <div class="mb-2 flex flex-wrap gap-2">
-        <n-input-group class="w-55%">
+        <n-input-group class="w-full sm:w-auto sm:flex-1">
           <n-input
             size="small"
             v-model:value="searchText"
             :placeholder="t('log_viewer.search_placeholder')"
             clearable />
-          <n-select size="small" v-model:value="selectedLevel" :options="logLevelOptions" style="width: 130px" />
+          <n-select size="small" v-model:value="selectedLevel" :options="logLevelOptions" class="w-32 shrink-0" />
         </n-input-group>
 
         <div class="flex flex-wrap gap-2 ml-auto items-center">
@@ -164,7 +164,7 @@ async function showLogsDirInFileManager() {
 
       <n-config-provider :theme="darkTheme" :theme-overrides="{ Scrollbar: { width: '8px' } }">
         <n-virtual-list
-          class="h-[calc(100vh-300px)] overflow-hidden bg-gray-900"
+          class="h-[min(60vh,520px)] min-h-[200px] overflow-hidden bg-gray-900"
           :item-size="42"
           item-resizable
           :hoverable="false"

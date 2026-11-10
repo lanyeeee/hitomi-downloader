@@ -6,8 +6,7 @@ import UncompletedProgresses from '../components/UncompletedProgresses.vue'
 import CompletedProgresses from '../components/CompletedProgresses.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { PhFolderOpen, PhGearSix } from '@phosphor-icons/vue'
-import SettingsDialog from '../components/SettingsDialog.vue'
+import { PhFolderOpen } from '@phosphor-icons/vue'
 import { ProgressData } from '../types.ts'
 
 const { t } = useI18n()
@@ -19,7 +18,6 @@ defineProps<{
 }>()
 
 const downloadSpeed = ref<string>('')
-const settingsDialogShowing = ref<boolean>(false)
 
 onMounted(async () => {
   await events.downloadSpeedEvent.listen(async ({ payload: { speed } }) => {
@@ -133,14 +131,14 @@ async function showDownloadDirInFileManager() {
 </script>
 
 <template>
-  <div v-if="store.config !== undefined" class="flex flex-col gap-2">
+  <div v-if="store.config !== undefined" class="h-full min-h-0 flex flex-col gap-2">
     <div class="flex gap-1 box-border px-2 pt-2">
       <n-input-group>
         <n-input-group-label size="small">
           {{ t('common.download_directory') }}
         </n-input-group-label>
         <n-input v-model:value="store.config.downloadDir" size="small" readonly @click="selectDownloadDir" />
-        <n-button class="w-9" size="small" @click="showDownloadDirInFileManager">
+        <n-button class="w-9 shrink-0" size="small" @click="showDownloadDirInFileManager">
           <template #icon>
             <n-icon size="20">
               <PhFolderOpen />
@@ -148,28 +146,20 @@ async function showDownloadDirInFileManager() {
           </template>
         </n-button>
       </n-input-group>
-      <n-button @click="settingsDialogShowing = true" size="small">
-        <template #icon>
-          <n-icon size="20">
-            <PhGearSix />
-          </n-icon>
-        </template>
-        {{ t('settings_dialog.name') }}
-      </n-button>
     </div>
 
-    <n-tabs class="h-full overflow-auto" type="line" size="small" animated>
-      <n-tab-pane class="h-full p-0! overflow-auto" name="uncompleted" :tab="t('uncompleted_progresses.name')">
+    <n-tabs class="flex-1 min-h-0 overflow-hidden" type="line" size="small" animated>
+      <n-tab-pane class="h-full p-0! overflow-hidden" name="uncompleted" :tab="t('uncompleted_progresses.name')">
         <uncompleted-progresses />
       </n-tab-pane>
-      <n-tab-pane class="h-full p-0! overflow-auto" name="completed" :tab="t('completed_progresses.name')">
+      <n-tab-pane class="h-full p-0! overflow-hidden" name="completed" :tab="t('completed_progresses.name')">
         <completed-progresses :search="search" />
       </n-tab-pane>
     </n-tabs>
 
-    <span class="ml-auto mr-2 mb-2">{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
-
-    <settings-dialog v-model:showing="settingsDialogShowing" />
+    <div class="mt-auto flex items-center justify-between px-2 pb-1 text-sm opacity-80">
+      <span>{{ t('downloading_pane.download_speed') }}: {{ downloadSpeed }}</span>
+    </div>
   </div>
 </template>
 

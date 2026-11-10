@@ -5,9 +5,9 @@
 
 # 📚 Hitomi Downloader
 
-A GUI-based multi-threaded downloader for hitomi hitomi.la
+A GUI-based multi-threaded downloader for [hitomi.la](https://hitomi.la)
 
-English / [简体中文](./README.zh-CN.md)
+English / [Español](./README.es-ES.md) / [简体中文](./README.zh-CN.md)
 
 ## 📥 Download
 
@@ -17,33 +17,70 @@ Pre-compiled packages are available on the [Releases page](https://github.com/la
 
 ## ✨ Features
 
-| Feature                            | Description                                                  |
-| ---------------------------------- | ------------------------------------------------------------ |
-| 🖼️ GUI                              | Built with [Tauri](https://v2.tauri.app/start/), lightweight, clean, and easy to use. |
-| ⚡ Multi-threaded Downloading       | Maximize download speed.                                     |
-| 📂 Export                           | One-click export to universal PDF or CBZ formats.            |
-| 🌐 Internationalization             | Built-in multi-language support system (i18n).               |
-| 🗂️ Customizable Directory Structure | Highly customizable directory structure and naming rules, supporting fields like type, author, language, etc. Say goodbye to the hassle of manual organization. |
+| Feature                              | Description                                                  |
+| ------------------------------------ | ------------------------------------------------------------ |
+| 🖼️ GUI                               | Built with [Tauri 2](https://v2.tauri.app/start/) and Vue 3: lightweight, clean and easy to use. |
+| 🔎 Search                            | Search by keywords, hitomi.la ID or URL, with autocomplete for artists, series, tags and languages. |
+| 🎯 Filters                           | Narrow the current results with `pages:>14`, `pages:<100` or `pages:12`, and combine any operator supported by hitomi.la (`artist:`, `language:`, `series:`, `group:`, `type:`, ...). |
+| ⚡ Multi-threaded downloading        | Maximize download speed.                                     |
+| 📥 Bulk download                     | Collect every page of a search, filter and select the comics you want, then queue them sequentially. |
+| 🗂️ Download queue                   | Live per-comic progress with pause, resume and cancel, plus right-click multi-select. |
+| 📂 Export                            | One-click export to universal PDF or CBZ formats from the local library. |
+| 🌐 Proxy support                     | Use the system proxy, no proxy, or a custom HTTP / SOCKS5 / SOCKS5H proxy with optional credentials, connection test and explicit save. |
+| 🗂️ Customizable directory structure | Highly customizable directory structure and naming rules, supporting fields like type, author, language, etc. Say goodbye to the hassle of manual organization. |
+| 🌓 Themes                            | Light, dark, or follow the system theme.                      |
+| 🌐 Internationalization              | English, Spanish and Simplified Chinese, with a built-in multilingual system (i18n). |
+| 📱 Responsive UI                     | Panes, cards and dialogs adapt from small windows to wide screens. |
 
-## 🖥️ GUI
+## 🖥️ Screenshots
 
-![image](https://github.com/user-attachments/assets/fd93fd2f-db16-43b6-86cf-aa643eb572c8)
-![image](https://github.com/user-attachments/assets/81a859f2-2a06-4eca-b45f-4f6555cc62c0)
+### Search and filters
 
+![Search results with language and page filters](docs/images/search.png)
+
+### Comic details
+
+![Comic details with metadata, other languages and related comics](docs/images/comic.png)
+
+### Bulk download
+
+![Bulk download dialog with selectable results](docs/images/bulk-download.png)
+
+### Downloads and local library
+
+![Download queue with live progress](docs/images/downloads.png)
+
+![Local library with PDF and CBZ export](docs/images/local.png)
+
+### Settings and proxy
+
+![Settings with custom proxy configuration](docs/images/settings.png)
+
+### Dark mode
+
+![Dark mode](docs/images/dark-mode.png)
 
 ## 📖 How to Use
 
-1.  In `Search` tab search for keywords.
-2.  Click the `Download` button directly on the comic card, or click the cover/title to go to the `Comic` tab, where you'll also find a `Download` button.
-3.  After downloading, click the `Open Folder` button to check the results.
-
-**By the way, you can export to PDF/CBZ(ZIP) in the `Local` tab.**
+1.  In the `Search` tab, type keywords or a hitomi.la ID/URL. Use operators such as `artist:name`, `language:spanish` or `pages:>20` to narrow the search.
+2.  Click `Download` directly on a comic card, or click the cover/title to open the `Comic` tab, review the details and languages, and download from there.
+3.  Follow the progress in the `Downloads` tab. Right-click a task to pause, resume or cancel it; double-clicking toggles pause/resume.
+4.  To download many comics at once, click `Download Results`, filter the list, select what you want and start the queue. Tasks are downloaded one after another.
+5.  Finished comics appear in the `Local` tab, where you can open their folder or export them to PDF/CBZ(ZIP).
 
 📹 The video below demonstrates the full usage process. **It's Safe For Work, so feel free to watch.**
 
 https://github.com/user-attachments/assets/d2d0e577-c074-41ca-996f-445d52e2cce5
 
+## 🧭 Using a Proxy
 
+If hitomi.la is not reachable from your network, open `Settings` and pick a proxy mode:
+
+-   `System`: reuse the operating system proxy.
+-   `No Proxy`: connect directly.
+-   `Custom`: choose the protocol (`HTTP`, `SOCKS5` or `SOCKS5H`), enter host and port, and optionally a username and password. `SOCKS5H` lets the proxy resolve DNS, which is useful with Tor.
+
+Click `Test Connection` to verify that the proxy can reach hitomi.la, then `Save` to persist the configuration. Credentials are stored in plain text inside `config.json`, so protect that file accordingly.
 
 ## ⚠️ About Antivirus False Positives
 

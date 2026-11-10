@@ -51,6 +51,19 @@
     "system_proxy": "System",
     "no_proxy": "No Proxy",
     "custom_proxy": "Custom",
+    "proxy_protocol": "Protocol",
+    "socks5_tip": "DNS is resolved locally",
+    "socks5h_tip": "DNS is resolved by the proxy. Use it if DNS resolution is blocked or poisoned",
+    "proxy_username": "Username",
+    "proxy_password": "Password",
+    "proxy_credentials_tip": "Optional. Credentials are stored unencrypted in config.json",
+    "save_config": "Save",
+    "save_config_failed": "Failed to save the configuration",
+    "test_proxy": "Test Connection",
+    "proxy_test_success": "Proxy OK ({ms} ms)",
+    "proxy_test_failed": "Proxy test failed",
+    "proxy_host_required": "Please enter the proxy host",
+    "proxy_port_invalid": "The port must be between 1 and 65535",
     "open_config_directory": "Open Config Folder",
     "directory_format": {
       "name": "Folder Format",
@@ -66,15 +79,41 @@
       "directory_result": "Download comic 2829145 will create 3 nested folders:"
     }
   },
+  "theme": {
+    "dark_mode": "Dark mode",
+    "light_mode": "Light mode",
+    "system_mode": "System"
+  },
   "search_pane": {
     "name": "Search",
     "search_by_query": "Keywords",
     "search_by_id": "Comic ID (Link also works)",
+    "pages": "Pages",
+    "pages_placeholder": "e.g. pages:>14, pages:<100, pages:12",
+    "filter_button": "Filter",
+    "filter_clear": "Clear",
+    "invalid_page_filter": "Invalid page filter (e.g. pages:>14)",
     "searching": "Searching...",
     "searching_warning": "Search is processing, please try again later",
     "search_success": "Search done",
     "comic_id_invalid": "Invalid Comic ID format",
-    "enter_comic_id_or_url": "Please enter Comic ID or URL"
+    "enter_comic_id_or_url": "Please enter Comic ID or URL",
+    "no_results": "No results found"
+  },
+  "bulk_download": {
+    "name": "Download Results",
+    "filter_placeholder": "Filter by title, artist or tag...",
+    "collecting_page": "Loading page {current}/{total}...",
+    "collect_failed": "Failed to collect results",
+    "selected_count": "{selected} of {total} selected",
+    "download_button": "Download ({count})",
+    "downloading_item": "Downloading {current}/{total}: {title}",
+    "finished": "Downloads finished. Completed: {completed}, failed: {failed}",
+    "queue_cancelled": "Queue cancelled, remaining downloads were not started",
+    "cancel_queue": "Cancel Queue",
+    "close": "Close",
+    "empty": "No results to download",
+    "no_match": "No results match the filter"
   },
   "downloaded_pane": {
     "name": "Local",

@@ -1,0 +1,156 @@
+{
+  "name": "Español",
+  "common": {
+    "artist": "Artista",
+    "group": "Grupo",
+    "series": "Serie",
+    "character": "Personaje",
+    "type": "Tipo",
+    "language": "Idioma",
+    "tag": "Etiqueta",
+    "open_directory": "Abrir carpeta",
+    "export_pdf": "Exportar PDF",
+    "export_cbz": "Exportar CBZ",
+    "download_directory": "Carpeta de descarga",
+    "export_directory": "Carpeta de exportación",
+    "select_all": "Seleccionar todo",
+    "continue": "Continuar",
+    "pause": "Pausar",
+    "cancel": "Cancelar"
+  },
+  "app_content": {
+    "save_config_success": "Configuración guardada",
+    "logs_directory_size_too_big": "La carpeta de logs supera los 50 MB",
+    "log_cleanup_reminder": "Limpia los archivos de log pronto",
+    "click_top_center": "Haz clic en el centro superior",
+    "there_is": "Hay",
+    "you_can_also_uncheck": "También puedes desmarcar",
+    "this_will_disable_file_logging": "Esto detendrá los registros en archivo"
+  },
+  "log_viewer": {
+    "name": "Registro",
+    "logs_directory_size": "Tamaño de la carpeta de logs",
+    "search_placeholder": "Buscar en logs...",
+    "open_logs_directory": "Abrir carpeta de logs",
+    "enable_file_logging": "Habilitar registro en archivo",
+    "clear_log_viewer": "Limpiar visor de registros"
+  },
+  "about_dialog": {
+    "name": "Acerca de",
+    "support_message": "¿Disfrutas de este proyecto? ¡Apóyalo con una estrella en {github}⭐!",
+    "motivation_message": "Tu apoyo me motiva a seguir actualizando y manteniendo🙏",
+    "software_version": "Versión",
+    "source_code_repository": "Código fuente",
+    "feedback": "Comentarios"
+  },
+  "settings_dialog": {
+    "name": "Configuración",
+    "download_format": "Formato de descarga",
+    "avif_warning": "No se puede exportar a PDF",
+    "proxy_mode": "Modo de proxy",
+    "system_proxy": "Sistema",
+    "no_proxy": "Sin proxy",
+    "custom_proxy": "Personalizado",
+    "proxy_protocol": "Protocolo",
+    "socks5_tip": "El DNS se resuelve localmente",
+    "socks5h_tip": "El DNS lo resuelve el proxy. Úsalo si la resolución DNS está bloqueada o contaminada",
+    "proxy_username": "Usuario",
+    "proxy_password": "Contraseña",
+    "proxy_credentials_tip": "Opcional. Las credenciales se guardan sin cifrar en config.json",
+    "save_config": "Guardar",
+    "save_config_failed": "No se pudo guardar la configuración",
+    "test_proxy": "Probar conexión",
+    "proxy_test_success": "Proxy OK ({ms} ms)",
+    "proxy_test_failed": "Falló la prueba del proxy",
+    "proxy_host_required": "Introduce el host del proxy",
+    "proxy_port_invalid": "El puerto debe estar entre 1 y 65535",
+    "open_config_directory": "Abrir carpeta de configuración",
+    "directory_format": {
+      "name": "Formato de carpeta",
+      "directory_level_tips": "Usa la barra diagonal {slash} para separar los niveles de carpeta",
+      "available_fields": "Campos disponibles",
+      "id": "ID del cómic",
+      "title": "Título del cómic",
+      "type": "Tipo de cómic (por ejemplo, doujinshi, manga, imageset)",
+      "artists": "Autores del cómic",
+      "language": "Nombre del idioma",
+      "language_localname": "Nombre localizado del idioma",
+      "for_example": "Por ejemplo",
+      "directory_result": "Descargar el cómic 2829145 creará 3 carpetas anidadas:"
+    }
+  },
+  "theme": {
+    "dark_mode": "Modo oscuro",
+    "light_mode": "Modo claro",
+    "system_mode": "Sistema"
+  },
+  "search_pane": {
+    "name": "Buscar",
+    "search_by_query": "Palabras clave",
+    "search_by_id": "ID del cómic (también funciona el enlace)",
+    "pages": "Páginas",
+    "pages_placeholder": "ej. pages:>14, pages:<100, pages:12",
+    "filter_button": "Filtrar",
+    "filter_clear": "Limpiar",
+    "invalid_page_filter": "Filtro de páginas inválido (ej. pages:>14)",
+    "searching": "Buscando...",
+    "searching_warning": "Hay una búsqueda en curso, inténtalo de nuevo más tarde",
+    "search_success": "Búsqueda finalizada",
+    "comic_id_invalid": "Formato de ID de cómic inválido",
+    "enter_comic_id_or_url": "Por favor introduce el ID del cómic o la URL",
+    "no_results": "No se encontraron resultados"
+  },
+  "bulk_download": {
+    "name": "Descargar resultados",
+    "filter_placeholder": "Filtrar por título, autor o etiqueta...",
+    "collecting_page": "Cargando página {current}/{total}...",
+    "collect_failed": "No se pudieron recolectar los resultados",
+    "selected_count": "{selected} de {total} seleccionados",
+    "download_button": "Descargar ({count})",
+    "downloading_item": "Descargando {current}/{total}: {title}",
+    "finished": "Descarga finalizada. Completados: {completed}, fallidos: {failed}",
+    "queue_cancelled": "Cola cancelada, las descargas restantes no se iniciaron",
+    "cancel_queue": "Cancelar cola",
+    "close": "Cerrar",
+    "empty": "No hay resultados para descargar",
+    "no_match": "No hay resultados que coincidan con el filtro"
+  },
+  "downloaded_pane": {
+    "name": "Local",
+    "empty_description": "Descarga cómics primero",
+    "pdf_exporting": "Exportando PDF",
+    "pdf_export_error": "La exportación a PDF falló",
+    "pdf_exported": "PDF exportado",
+    "cbz_exporting": "Exportando CBZ",
+    "cbz_export_error": "La exportación a CBZ falló",
+    "cbz_exported": "CBZ exportado"
+  },
+  "comic_pane": {
+    "name": "Cómic",
+    "other_language": "Otros idiomas",
+    "empty_description": "Selecciona un cómic (@:search_pane.name @:downloaded_pane.name)",
+    "related": "Cómics relacionados"
+  },
+  "downloading_pane": {
+    "name": "Descargas",
+    "pending": "Pendiente",
+    "downloading": "Descargando",
+    "paused": "Pausado",
+    "cancelled": "Cancelado",
+    "completed": "Completado",
+    "failed": "Fallado",
+    "download_speed": "Velocidad de descarga"
+  },
+  "uncompleted_progresses": {
+    "name": "Descargando",
+    "usage_tips": "Arrastra con el botón izquierdo para seleccionar, clic derecho para menú, doble clic para pausar/continuar"
+  },
+  "completed_progresses": {
+    "name": "Completado"
+  },
+  "download_button": {
+    "quick_download": "Descargar",
+    "resume_download": "Reanudar",
+    "download_again": "Volver a descargar"
+  }
+}

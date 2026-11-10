@@ -151,8 +151,6 @@ async function showExportDirInFileManager() {
   if (store.config === undefined) {
     return
   }
-  console.log(currentPageComics.value)
-
   const result = await commands.showPathInFileManager(store.config.exportDir)
   if (result.status === 'error') {
     console.error(result.error)
@@ -161,7 +159,7 @@ async function showExportDirInFileManager() {
 </script>
 
 <template>
-  <div v-if="store.config !== undefined" class="h-full flex flex-col gap-2">
+  <div v-if="store.config !== undefined" class="h-full min-h-0 flex flex-col gap-2">
     <n-input-group class="box-border px-2 pt-2">
       <n-input-group-label size="small">
         {{ t('common.export_directory') }}
@@ -176,14 +174,19 @@ async function showExportDirInFileManager() {
       </n-button>
     </n-input-group>
 
-    <div ref="comicCardContainerRef" class="flex flex-col gap-row-2 overflow-auto box-border px-2">
+    <div ref="comicCardContainerRef" class="flex-1 min-h-0 flex flex-col gap-2 overflow-auto box-border px-2">
+      <div v-if="currentPageComics.length === 0" class="flex flex-1 items-center justify-center">
+        <n-empty :description="t('downloaded_pane.empty_description')" />
+      </div>
       <downloaded-comic-card v-for="comic in currentPageComics" :key="comic.id" :search="search" :comic="comic" />
     </div>
 
     <n-pagination
-      class="box-border p-2 pt-0 mt-auto"
+      v-if="pageCount > 0"
+      class="box-border p-2 pt-0 self-end"
       :page-count="pageCount"
       :page="currentPage"
+      :page-slot="5"
       @update:page="currentPage = $event" />
   </div>
 </template>

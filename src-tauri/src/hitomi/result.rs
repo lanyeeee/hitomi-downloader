@@ -44,18 +44,20 @@ pub async fn do_search(query: String, sort_by_popularity: bool) -> anyhow::Resul
     let get_positive_results_tasks: Vec<_> = positive_terms
         .iter()
         .map(|term| async move {
-            get_gallery_ids_for_query(term)
-                .await
-                .unwrap_or_else(|_| IndexSet::new())
+            get_gallery_ids_for_query(term).await.unwrap_or_else(|err| {
+                tracing::warn!(term = %term, message = %err, "search term failed");
+                IndexSet::new()
+            })
         })
         .collect();
 
     let get_negative_results_tasks: Vec<_> = negative_terms
         .iter()
         .map(|term| async move {
-            get_gallery_ids_for_query(term)
-                .await
-                .unwrap_or_else(|_| IndexSet::new())
+            get_gallery_ids_for_query(term).await.unwrap_or_else(|err| {
+                tracing::warn!(term = %term, message = %err, "search term failed");
+                IndexSet::new()
+            })
         })
         .collect();
 

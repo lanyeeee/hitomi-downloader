@@ -48,6 +48,9 @@ pub fn save_config(
         config_state.proxy_mode != config.proxy_mode
             || config_state.proxy_host != config.proxy_host
             || config_state.proxy_port != config.proxy_port
+            || config_state.proxy_protocol != config.proxy_protocol
+            || config_state.proxy_username != config.proxy_username
+            || config_state.proxy_password != config.proxy_password
     };
 
     let enable_file_logger = config.enable_file_logger;
@@ -81,6 +84,16 @@ pub fn save_config(
     }
 
     Ok(())
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn test_proxy(hitomi_client: State<'_, HitomiClient>) -> CommandResult<u64> {
+    let elapsed_ms = hitomi_client
+        .test_proxy()
+        .await
+        .map_err(|err| CommandError::from("test proxy failed", err))?;
+    Ok(elapsed_ms)
 }
 
 #[tauri::command(async)]

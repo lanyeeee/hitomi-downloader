@@ -1,11 +1,12 @@
 <script setup lang="tsx">
 import { computed, nextTick, ref, watch } from 'vue'
-import { commands, Suggestion } from '../bindings.ts'
+import { Comic, commands, Suggestion } from '../bindings.ts'
 import { SelectOption, useMessage, useNotification } from 'naive-ui'
 import ComicCard from '../components/ComicCard.vue'
+import BulkDownloadDialog from '../components/BulkDownloadDialog.vue'
 import { useStore } from '../store.ts'
 import { useI18n } from '../utils.ts'
-import { PhMagnifyingGlass, PhArrowRight } from '@phosphor-icons/vue'
+import { PhMagnifyingGlass, PhArrowRight, PhFunnel, PhDownloadSimple } from '@phosphor-icons/vue'
 import FloatLabelInput from '../components/FloatLabelInput.vue'
 
 const { t } = useI18n()
@@ -20,6 +21,81 @@ const searchInputRef = ref<InstanceType<typeof FloatLabelInput>>()
 const comicIdInput = ref<string>('')
 const currentPage = ref<number>(1)
 const comicCardContainerRef = ref<HTMLElement>()
+
+// Filtro de páginas aplicado sobre el cache de resultados (sin re-fetch)
+const pageFilterInput = ref<string>('')
+const pageFilterApplied = ref<boolean>(false)
+type PageOp = '>' | '<' | '=='
+interface PageFilter {
+  op: PageOp
+  value: number
+}
+const pageFilter = ref<PageFilter | null>(null)
+
+function parsePageFilter(input: string): PageFilter | null {
+  const m = input.trim().match(/^pages?:\s*(>|<|=)?\s*(\d+)$/i)
+  if (!m) return null
+  const op = m[1] === '>' ? '>' : m[1] === '<' ? '<' : '=='
+  return { op, value: parseInt(m[2], 10) }
+}
+
+const comicsRaw = computed(() => store.searchResult?.comics ?? [])
+
+const filteredComics = computed(() => {
+  if (!pageFilterApplied.value || !pageFilter.value) return comicsRaw.value
+  const { op, value } = pageFilter.value
+  return comicsRaw.value.filter((comic) => {
+    const pages = comic.files?.length ?? 0
+    if (op === '>') return pages > value
+    if (op === '<') return pages < value
+    return pages === value
+  })
+})
+
+function applyPageFilter() {
+  const parsed = parsePageFilter(pageFilterInput.value)
+  if (!parsed) {
+    message.warning(() => t('search_pane.invalid_page_filter'))
+    return
+  }
+  if (!store.searchResult?.comics.length) return
+  pageFilter.value = parsed
+  pageFilterApplied.value = true
+}
+
+function clearPageFilter() {
+  pageFilterInput.value = ''
+  pageFilter.value = null
+  pageFilterApplied.value = false
+}
+
+interface BulkSource {
+  ids: number[]
+  totalPage: number
+  cachedPage: number
+  cachedComics: Comic[]
+  pageFilter: PageFilter | null
+}
+
+const bulkDialogShowing = ref<boolean>(false)
+const bulkSource = ref<BulkSource>()
+
+function openBulkDownloadDialog() {
+  const result = store.searchResult
+  if (result === undefined || result.comics.length === 0) {
+    return
+  }
+  // Snapshot the current result so later searches or page changes do not affect the dialog
+  bulkSource.value = {
+    ids: result.ids,
+    totalPage: result.totalPage,
+    cachedPage: result.currentPage,
+    cachedComics: result.comics,
+    pageFilter: pageFilterApplied.value ? pageFilter.value : null,
+  }
+  bulkDialogShowing.value = true
+}
+
 const {
   onSuggestionSelect,
   getSearchSuggestions,
@@ -102,6 +178,7 @@ async function pickComic() {
   if (comicId === undefined) {
     notification.error({
       title: () => t('search_pane.comic_id_invalid'),
+      duration: 4000,
       description: () => t('search_pane.enter_comic_id_or_url'),
     })
     return
@@ -190,6 +267,10 @@ function useSuggestion() {
       console.error(result.error)
       return
     }
+    // A search started while the suggestion request was in flight
+    if (searching.value) {
+      return
+    }
 
     suggestions.value = result.data
     suggestionsShowing.value = true
@@ -229,7 +310,7 @@ defineExpose({ search })
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-2">
+  <div class="h-full min-h-0 flex flex-col gap-2">
     <n-input-group class="box-border px-2 pt-2">
       <FloatLabelInput
         :label="t('search_pane.search_by_query')"
@@ -248,7 +329,7 @@ defineExpose({ search })
         :options="suggestionOptions"
         @select="onSuggestionSelect"
         @clickoutside="() => (suggestionsShowing = false)" />
-      <n-button :loading="searching" type="primary" class="w-15%" size="small" @click="search(searchInput.trim(), 1)">
+      <n-button :loading="searching" type="primary" class="w-11 shrink-0" size="small" @click="search(searchInput.trim(), 1)">
         <template #icon>
           <n-icon size="22">
             <PhMagnifyingGlass />
@@ -265,7 +346,7 @@ defineExpose({ search })
         v-model:value="comicIdInput"
         clearable
         @keydown.enter="pickComic" />
-      <n-button type="primary" class="w-15%" size="small" @click="pickComic">
+      <n-button type="primary" class="w-11 shrink-0" size="small" @click="pickComic">
         <template #icon>
           <n-icon size="22">
             <PhArrowRight />
@@ -274,22 +355,86 @@ defineExpose({ search })
       </n-button>
     </n-input-group>
 
+    <n-input-group class="box-border px-2">
+      <FloatLabelInput
+        :label="t('search_pane.pages_placeholder')"
+        class="text-align-left"
+        size="small"
+        v-model:value="pageFilterInput"
+        clearable
+        @keydown.enter="applyPageFilter" />
+      <n-button
+        type="primary"
+        class="shrink-0"
+        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        size="small"
+        @click="applyPageFilter">
+        {{ t('search_pane.filter_button') }}
+        <template #icon>
+          <n-icon size="22">
+            <PhFunnel />
+          </n-icon>
+        </template>
+      </n-button>
+
+      <n-button
+        v-if="pageFilterApplied"
+        type="primary"
+        class="shrink-0"
+        :disabled="!(store.searchResult?.comics.length ?? 0)"
+        size="small"
+        @click="clearPageFilter">
+        {{ t('search_pane.filter_clear') }}
+        <template #icon>
+          <n-icon size="22">
+            <PhFunnel />
+          </n-icon>
+        </template>
+      </n-button>
+    </n-input-group>
+
     <div
       v-if="store.searchResult !== undefined"
       ref="comicCardContainerRef"
-      class="flex flex-col gap-row-2 overflow-auto box-border px-2">
-      <comic-card
-        v-for="(comic, index) in store.searchResult.comics"
-        :key="comic.id"
-        :search="search"
-        v-model:comic="store.searchResult.comics[index]" />
+      class="flex-1 min-h-0 flex flex-col overflow-auto box-border px-2">
+      <div v-if="filteredComics.length === 0" class="flex flex-1 items-center justify-center">
+        <n-empty :description="t('search_pane.no_results')" />
+      </div>
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-3 min-w-0">
+        <comic-card v-for="comic in filteredComics" :key="comic.id" :search="search" :comic="comic" />
+      </div>
     </div>
 
-    <n-pagination
+    <div
       v-if="store.searchResult !== undefined"
-      class="box-border p-2 pt-0 mt-auto"
-      :page-count="store.searchResult.totalPage"
-      :page="currentPage"
-      @update:page="handlePageChange" />
+      class="flex flex-wrap items-center gap-2 box-border p-2 pt-0 mt-auto">
+      <n-button
+        size="small"
+        type="primary"
+        :disabled="store.searchResult.comics.length === 0"
+        @click="openBulkDownloadDialog">
+        <template #icon>
+          <n-icon size="20">
+            <PhDownloadSimple />
+          </n-icon>
+        </template>
+        {{ t('bulk_download.name') }}
+      </n-button>
+      <n-pagination
+        class="ml-auto"
+        :page-slot="5"
+        :page-count="store.searchResult.totalPage"
+        :page="currentPage"
+        @update:page="handlePageChange" />
+    </div>
+
+    <bulk-download-dialog
+      v-if="bulkSource !== undefined"
+      v-model:showing="bulkDialogShowing"
+      :ids="bulkSource.ids"
+      :total-page="bulkSource.totalPage"
+      :cached-page="bulkSource.cachedPage"
+      :cached-comics="bulkSource.cachedComics"
+      :page-filter="bulkSource.pageFilter" />
   </div>
 </template>

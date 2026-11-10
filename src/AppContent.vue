@@ -1,8 +1,8 @@
 <script setup lang="tsx">
-import { onMounted, ref, watch } from 'vue'
-import { useMessage, useNotification } from 'naive-ui'
+import { onMounted, ref, computed } from 'vue'
+import { useNotification } from 'naive-ui'
 import { commands } from './bindings.ts'
-import { useStore } from './store.ts'
+import { useStore, Theme } from './store.ts'
 import LogViewer from './components/LogViewer.vue'
 import { useI18n } from './utils.ts'
 import AboutDialog from './components/AboutDialog.vue'
@@ -10,13 +10,26 @@ import SearchPane from './panes/SearchPane.vue'
 import DownloadedPane from './panes/DownloadedPane.vue'
 import ComicPane from './panes/ComicPane.vue'
 import DownloadingPane from './panes/DownloadingPane.vue'
-import { PhClockCounterClockwise, PhInfo, PhTranslate } from '@phosphor-icons/vue'
+import { PhClockCounterClockwise, PhInfo, PhTranslate, PhSun, PhMoon, PhMonitor } from '@phosphor-icons/vue'
 import { locales } from './locales'
 
 const { t, locale } = useI18n()
 const store = useStore()
 
-const message = useMessage()
+const themeLabel = computed(() => {
+  const mode = store.theme
+  if (mode === 'system') return t('theme.system_mode')
+  if (mode === 'dark') return t('theme.dark_mode')
+  return t('theme.light_mode')
+})
+
+function toggleTheme() {
+  const themes: Theme[] = ['light', 'system', 'dark']
+  const current = store.theme ?? 'system'
+  const nextIndex = (themes.indexOf(current) + 1) % themes.length
+  store.setTheme(themes[nextIndex])
+}
+
 const notification = useNotification()
 
 const logViewerShowing = ref<boolean>(false)
@@ -29,17 +42,16 @@ const localeOptions = Object.entries(locales).map(([key, value]) => ({
 
 const searchPaneRef = ref<InstanceType<typeof SearchPane>>()
 
-watch(
-  () => store.config,
-  async () => {
-    if (store.config === undefined) {
-      return
+const activeDownloads = computed(() => {
+  let count = 0
+  for (const [, data] of store.progresses.entries()) {
+    if (data.state === 'Downloading' || data.state === 'Pending') {
+      count++
     }
-    await commands.saveConfig(store.config)
-    message.success(() => t('app_content.save_config_success'))
-  },
-  { deep: true },
-)
+  }
+  let status = `${count > 0 ? `(${count}) ` : ''}${t('downloading_pane.name')}`
+  return status
+})
 
 onMounted(async () => {
   // block the browser right-click menu
@@ -58,6 +70,7 @@ onMounted(async () => {
     notification.warning({
       title: () => t('app_content.logs_directory_size_too_big'),
       description: () => t('app_content.log_cleanup_reminder'),
+      duration: 4000,
       content: () => (
         <>
           <div>
@@ -82,58 +95,90 @@ onMounted(async () => {
 
 <template>
   <div v-if="store.config !== undefined" class="h-screen flex flex-col">
-    <div class="flex flex-1 overflow-hidden">
-      <n-tabs class="h-full w-1/2" v-model:value="store.currentTabName" type="line" size="small" animated>
+    <div class="relative flex flex-1 overflow-hidden p-2">
+      <n-tabs class="h-full" v-model:value="store.currentTabName" type="line" size="small" animated>
         <n-tab-pane
-          class="h-full overflow-auto p-0!"
+          class="h-full overflow-hidden p-0!"
           name="search"
           :tab="t('search_pane.name')"
           display-directive="show">
           <searchPane ref="searchPaneRef" />
         </n-tab-pane>
         <n-tab-pane
-          class="h-full overflow-auto p-0!"
+          class="h-full overflow-hidden p-0!"
+          name="comic"
+          :tab="t('comic_pane.name')"
+          display-directive="show">
+          <comic-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
+        </n-tab-pane>
+        <n-tab-pane
+          name="downloading"
+          class="h-full overflow-hidden p-0!"
+          display-directive="show">
+          <template #tab>
+            {{ activeDownloads }}
+          </template>
+          <downloading-pane
+            class="h-full overflow-hidden"
+            v-if="searchPaneRef !== undefined"
+            :search="searchPaneRef.search" />
+        </n-tab-pane>
+        <n-tab-pane
+          class="h-full overflow-hidden p-0!"
           name="downloaded"
           :tab="t('downloaded_pane.name')"
           display-directive="show">
           <downloaded-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
         </n-tab-pane>
-        <n-tab-pane class="h-full overflow-auto p-0!" name="comic" :tab="t('comic_pane.name')" display-directive="show">
-          <comic-pane v-if="searchPaneRef !== undefined" :search="searchPaneRef.search" />
+        <n-tab-pane
+          name="settings"
+          class="h-full overflow-auto p-0!"
+          :tab="t('settings_dialog.name')"
+          display-directive="show">
+          <div class="mx-auto w-full max-w-4xl box-border p-3">
+            <div class="my-2 flex flex-wrap items-center gap-2">
+              <n-button @click="logViewerShowing = true">
+                <template #icon>
+                  <n-icon size="22">
+                    <PhClockCounterClockwise />
+                  </n-icon>
+                </template>
+                {{ t('log_viewer.name') }}
+              </n-button>
+              <n-button @click="aboutDialogShowing = true">
+                <template #icon>
+                  <n-icon size="22">
+                    <PhInfo />
+                  </n-icon>
+                </template>
+                {{ t('about_dialog.name') }}
+              </n-button>
+              <n-icon size="28">
+                <PhTranslate />
+              </n-icon>
+              <n-select class="w-30" v-model:value="locale" :options="localeOptions" />
+            </div>
+
+            <settings-dialog />
+          </div>
         </n-tab-pane>
       </n-tabs>
-      <div class="w-1/2 overflow-auto h-full flex flex-col">
-        <div class="flex gap-2 px-2 box-border items-center">
-          <n-button @click="logViewerShowing = true">
-            <template #icon>
-              <n-icon size="22">
-                <PhClockCounterClockwise />
-              </n-icon>
-            </template>
-            {{ t('log_viewer.name') }}
-          </n-button>
-          <n-button @click="aboutDialogShowing = true">
-            <template #icon>
-              <n-icon size="22">
-                <PhInfo />
-              </n-icon>
-            </template>
-            {{ t('about_dialog.name') }}
-          </n-button>
-
-          <div class="ml-auto flex items-center">
-            <n-icon size="28">
-              <PhTranslate />
-            </n-icon>
-            <n-select class="w-30" v-model:value="locale" :options="localeOptions" />
-          </div>
-        </div>
-        <downloading-pane
-          class="flex-1 overflow-auto"
-          v-if="searchPaneRef !== undefined"
-          :search="searchPaneRef.search" />
-      </div>
+      <n-button
+        size="small"
+        @click="toggleTheme"
+        :title="themeLabel"
+        class="absolute right-4 top-3 z-10 shadow-md">
+        <template #icon>
+          <n-icon size="20" class="flex items-center justify-center">
+            <PhSun v-if="store.theme === 'light'" />
+            <PhMoon v-else-if="store.theme === 'dark'" />
+            <PhMonitor v-else />
+          </n-icon>
+        </template>
+        <span class="hidden md:inline ml-1">{{ themeLabel }}</span>
+      </n-button>
     </div>
+
     <log-viewer v-model:showing="logViewerShowing" />
     <about-dialog v-model:showing="aboutDialogShowing" />
   </div>
@@ -148,6 +193,6 @@ onMounted(async () => {
 }
 
 :deep(.n-tabs-nav) {
-  @apply px-2;
+  @apply px-2 pr-16 md:pr-32;
 }
 </style>
